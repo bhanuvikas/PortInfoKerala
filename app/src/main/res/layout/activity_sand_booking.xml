@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SandBooking"
+    android:background="#fef6af"
+    android:fillViewport="true">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fef6af"
+        android:padding="20dp"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/port_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/port_name"
+                android:textSize="16sp"
+                android:textColor="@color/skyBlue"/>
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/port_name_spinner"
+                android:layout_alignParentEnd="true"
+                android:prompt="@string/port_name"
+                android:layout_below="@+id/port_name"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="24dp">
+            </Spinner>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/zone_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/zone_name"
+                android:textSize="16sp"
+                android:textColor="@color/skyBlue"/>
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/zone_name_spinner"
+                android:layout_alignParentEnd="true"
+                android:prompt="@string/zone_name"
+                android:layout_below="@+id/zone_name"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="24dp">
+            </Spinner>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/quantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/quantity"
+                android:textSize="16sp"
+                android:textColor="@color/skyBlue"/>
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/quantity_spinner"
+                android:layout_alignParentEnd="true"
+                android:prompt="@string/quantity"
+                android:layout_below="@+id/quantity"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="24dp">
+            </Spinner>
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/destination_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/destination"
+            android:background="@color/skyBlue"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/destination_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <Button
+            android:id="@+id/origin_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/origin"
+            android:background="@color/skyBlue"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/origin_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/distance_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/distance_time"
+            android:background="@color/skyBlue"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/distance_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/time_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/confirm_booking_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/confirm_booking"
+            android:background="@color/skyBlue"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</ScrollView>

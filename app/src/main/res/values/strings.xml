@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">Port Info Kerala</string>
+    <string name="api_key">AIzaSyBoboDDwQFdwgPCiXqZkQzRkBPKJFIfRtc</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="name">Username</string>
+    <string name="request_otp">Request OTP</string>
+    <string name="spot_booking">Spot Booking</string>
+    <string name="new_customer_registration">New Customer Registration</string>
+    <string name="otp">Enter OTP</string>
+    <string name="login">Login</string>
+    <string name="booking_history">Booking History</string>
+    <string name="payment">Payment</string>
+    <string name="booking_status">Booking Status</string>
+    <string name="sand_booking">Sand Booking</string>
+    <string name="complete_payment">Complete Payment</string>
+    <string name="port_name">Port Name : </string>
+    <string name="zone_name">Zone Name :</string>
+    <string name="quantity">Quantity :</string>
+    <string name="destination">Destination :</string>
+
+    <string-array name="port_names">
+
+        <item>Select</item>
+        <item>Port-A</item>
+        <item>Port-B</item>
+        <item>Port-C</item>
+
+    </string-array>
+
+    <string-array name="zone_names">
+
+        <item>Select</item>
+        <item>Zone-1</item>
+        <item>Zone-2</item>
+        <item>Zone-3</item>
+
+    </string-array>
+
+    <string-array name="quantity">
+
+        <item>Select</item>
+        <item>3 tons</item>
+        <item>5 tons</item>
+        <item>7 tons</item>
+
+    </string-array>
+    <string name="title_activity_place_picker">Map</string>
+    <string name="origin">Origin :</string>
+    <string name="distance_time">Distance and Time</string>
+    <string name="confirm_booking">Confirm Booking</string>
+    <string name="distance">Distance :</string>
+    <string name="time">Time :</string>
+    <string name="booking_details">Booking Details</string>
+    <string name="pay_later">Pay Later</string>
+    <string name="proceed_to_payment">Proceed To Payment</string>
+    <string name="payment_details">Payment Details</string>
+    <string name="proceed">Proceed</string>
+
+
+</resources>

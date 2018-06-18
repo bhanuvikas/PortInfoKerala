@@ -1,0 +1,22 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="sand_booking">Sand Booking</style>
+
+    <style name="booking_status">Booking Status</style>
+
+    <style name="CustomAppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- My custom theme for PortInfoKerala App   -->
+        <item name="colorPrimary">@color/lightBrown</item>
+        <item name="colorPrimaryDark">@color/darkBrown</item>
+        <item name="colorAccent">@color/lightBrown</item>
+    </style>
+
+</resources>
