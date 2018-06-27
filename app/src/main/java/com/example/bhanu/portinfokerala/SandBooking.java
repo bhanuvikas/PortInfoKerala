@@ -28,8 +28,9 @@ public class SandBooking extends AppCompatActivity {
     String destinationDetails;
     String originDetails;
 
-    int PLACE_PICKER_REQUEST_1 = 1;
-    int PLACE_PICKER_REQUEST_2 = 1;
+//  int PLACE_PICKER_REQUEST_1 = 1;
+//  int PLACE_PICKER_REQUEST_2 = 1;
+
     TextView destination_tv;
     TextView origin_tv;
     TextView distance_tv;

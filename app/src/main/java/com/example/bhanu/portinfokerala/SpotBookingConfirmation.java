@@ -11,39 +11,28 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.payumoney.core.PayUmoneyConfig;
-import com.payumoney.core.PayUmoneyConstants;
 import com.payumoney.core.PayUmoneySdkInitializer;
 import com.payumoney.sdkui.ui.utils.PayUmoneyFlowManager;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Iterator;
 
-public class BookingConfirmationActivity extends AppCompatActivity {
+public class SpotBookingConfirmation extends AppCompatActivity {
 
 
     private  PayUmoneySdkInitializer.PaymentParam paymentParam;
@@ -54,12 +43,12 @@ public class BookingConfirmationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_booking_confirmation);
+        setContentView(R.layout.activity_spot_booking_confirmation);
 
 
         Log.d("Entering Confirmation", "Entered");
-        Intent fromSandBooking = getIntent();
-        final BookingDetails details = (BookingDetails) fromSandBooking.getSerializableExtra("booking_details");
+        Intent fromSpotBooking = getIntent();
+        final SpotBookingDetails details = (SpotBookingDetails) fromSpotBooking.getSerializableExtra("spot_booking_details");
 
         TextView port_confirmation_tv = (TextView) findViewById(R.id.port_name_confirmation);
         TextView zone_confirmation_tv = (TextView) findViewById(R.id.zone_name_confirmation);
@@ -68,7 +57,9 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         TextView destination_confirmation = (TextView) findViewById(R.id.destination_confirmation);
         TextView distane_confirmation = (TextView) findViewById(R.id.distance_confirmation);
         TextView time_confirmation = (TextView) findViewById(R.id.time_confirmation);
-
+        TextView name_confirmation = (TextView) findViewById(R.id.spot_name_tv);
+        TextView aadhar_confirmation = (TextView) findViewById(R.id.aadhar_no_tv);
+        TextView phone_confirmation = (TextView) findViewById(R.id.phone_no_tv);
 
         port_confirmation_tv.setText(details.portName);
         zone_confirmation_tv.setText(details.zoneName);
@@ -77,6 +68,9 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         destination_confirmation.setText(details.destination);
         distane_confirmation.setText(details.distance);
         time_confirmation.setText(details.time);
+        name_confirmation.setText(details.name);
+        aadhar_confirmation.setText(details.aadharNumber);
+        phone_confirmation.setText(details.phoneNumber);
 
 
         //confirming booking details and so displaying payment options
@@ -109,15 +103,15 @@ public class BookingConfirmationActivity extends AppCompatActivity {
                 {
                     AlertDialog.Builder builder;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        builder = new AlertDialog.Builder(BookingConfirmationActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+                        builder = new AlertDialog.Builder(SpotBookingConfirmation.this, android.R.style.Theme_Material_Dialog_Alert);
                     } else {
-                        builder = new AlertDialog.Builder(BookingConfirmationActivity.this);
+                        builder = new AlertDialog.Builder(SpotBookingConfirmation.this);
                     }
                     builder.setTitle("Booking successful")
                             .setMessage("You have booked sand successfully and you can pay later through complete payment option in your dashboard")
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Intent toCustomerHome = new Intent(BookingConfirmationActivity.this, CustomerHome.class);
+                                    Intent toCustomerHome = new Intent(SpotBookingConfirmation.this, CustomerHome.class);
                                     startActivity(toCustomerHome);
                                 }
                             })
@@ -131,7 +125,7 @@ public class BookingConfirmationActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    Toast.makeText(BookingConfirmationActivity.this, "Please select one of the options to proceed",
+                    Toast.makeText(SpotBookingConfirmation.this, "Please select one of the options to proceed",
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -165,8 +159,6 @@ public class BookingConfirmationActivity extends AppCompatActivity {
     }*/
 
 
-
-
     private void launchPayUMoney() {
 
         PayUmoneyConfig payUmoneyConfig = PayUmoneyConfig.getInstance();
@@ -189,9 +181,6 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         String udf3 = "";
         String udf4 = "";
         String udf5 = "";
-
-
-
 
         Application application = new Application();
         Environment appEnvironment = application.getEnvironment();
@@ -225,145 +214,116 @@ public class BookingConfirmationActivity extends AppCompatActivity {
 //        String merchantHash = hashCal("SHA-512", hashSequence);
 
         //paymentParam.setMerchantHash(merchantHash);
-        GetHashesFromServerTask getHashesFromServerTask = new GetHashesFromServerTask();
-        getHashesFromServerTask.execute(txnId, amount, productName, firstName, email, udf1, udf2, udf3, udf4, udf5);
+        SpotBookingConfirmation.GetHashesFromServerTask getHashesFromServerTask = new SpotBookingConfirmation.GetHashesFromServerTask();
+        getHashesFromServerTask.execute(txnId, amount, productName, firstName, email, "customer", udf1, udf2, udf3, udf4, udf5);
     }
 
 
-     /**
-      * This AsyncTask generates hash from server.
-      */
-     private class GetHashesFromServerTask extends AsyncTask<String, String, String> {
+    /**
+     * This AsyncTask generates hash from server.
+     */
+    private class GetHashesFromServerTask extends AsyncTask<String, String, String> {
 
-         private ProgressDialog progressDialog;
-
-
-         @Override
-         protected void onPreExecute() {
-             progressDialog = new ProgressDialog(BookingConfirmationActivity.this);
-             progressDialog.setMessage("Please wait...");
-             progressDialog.show();
-         }
+        private ProgressDialog progressDialog;
 
 
-         @Override
-         protected String doInBackground(String... postParams) {
-
-             String merchantHash = "";
-             try {
-
-                 String txnid = postParams[0];
-                 String amount = postParams[1];
-                 String productinfo = postParams[2];
-                 String firstname = postParams[3];
-                 String email = postParams[4];
-                 String udf1 = postParams[5];
-                 String udf2 = postParams[6];
-                 String udf3 = postParams[7];
-                 String udf4 = postParams[8];
-                 String udf5 = postParams[9];
-
-                 String data = URLEncoder.encode("txnid", "UTF-8") + "=" + URLEncoder.encode(txnid, "UTF-8");
-                 data += "&" + URLEncoder.encode("amount", "UTF-8") + "=" + URLEncoder.encode(amount, "UTF-8");
-                 data += "&" + URLEncoder.encode("productinfo", "UTF-8") + "=" + URLEncoder.encode(productinfo, "UTF-8");
-                 data += "&" + URLEncoder.encode("firstname", "UTF-8") + "=" + URLEncoder.encode(firstname, "UTF-8");
-                 data += "&" + URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
-                 data += "&" + URLEncoder.encode("udf1", "UTF-8") + "=" + URLEncoder.encode(udf1, "UTF-8");
-                 data += "&" + URLEncoder.encode("udf2", "UTF-8") + "=" + URLEncoder.encode(udf2, "UTF-8");
-                 data += "&" + URLEncoder.encode("udf3", "UTF-8") + "=" + URLEncoder.encode(udf3, "UTF-8");
-                 data += "&" + URLEncoder.encode("udf4", "UTF-8") + "=" + URLEncoder.encode(udf4, "UTF-8");
-                 data += "&" + URLEncoder.encode("udf5", "UTF-8") + "=" + URLEncoder.encode(udf5, "UTF-8");
-
-                 URL url = new URL("http://192.168.43.218/portinfo/getHashCode.php");
-                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-                 conn.setDoOutput(true);
-                 conn.setRequestMethod("POST");
-
-                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                 Log.e("returning response", "cool");
-
-                 wr.write(data);
-                 wr.flush();
-
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-                 StringBuilder sb = new StringBuilder();
-                 String line = null;
-
-                 // Read Server Response
-                 while((line = reader.readLine()) != null) {
-                     sb.append(line);
-                     break;
-                 }
-                 return sb.toString();
-
-             } catch (IOException e) {
-                 e.printStackTrace();
-             }
-             Log.e("empty string", "lol");
-             return "";
-
-         }
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(SpotBookingConfirmation.this);
+            progressDialog.setMessage("Please wait...");
+            progressDialog.show();
+        }
 
 
-         @Override
-         protected void onPostExecute(String response) {
+        @Override
+        protected String doInBackground(String... postParams) {
 
-             progressDialog.dismiss();
+            String merchantHash = "";
+            try {
 
-             String merchantHash = "";
+                String txnid = postParams[0];
+                String amount = postParams[1];
+                String productinfo = postParams[2];
+                String firstname = postParams[3];
+                String email = postParams[4];
+                String user_credentials = postParams[5];
+                String udf1 = postParams[6];
+                String udf2 = postParams[7];
+                String udf3 = postParams[8];
+                String udf4 = postParams[9];
+                String udf5 = postParams[10];
 
-             try {
-                 JSONObject jsonObject = null;
-                 jsonObject = new JSONObject(response);
-                 merchantHash += jsonObject.getString("payment_hash");
+                String data = URLEncoder.encode("txnid", "UTF-8") + "=" + URLEncoder.encode(txnid, "UTF-8");
+                data += "&" + URLEncoder.encode("amount", "UTF-8") + "=" + URLEncoder.encode(amount, "UTF-8");
+                data += "&" + URLEncoder.encode("productinfo", "UTF-8") + "=" + URLEncoder.encode(productinfo, "UTF-8");
+                data += "&" + URLEncoder.encode("firstname", "UTF-8") + "=" + URLEncoder.encode(firstname, "UTF-8");
+                data += "&" + URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+                data += "&" + URLEncoder.encode("user_credentials", "UTF-8") + "=" + URLEncoder.encode(user_credentials, "UTF-8");
+                data += "&" + URLEncoder.encode("udf1", "UTF-8") + "=" + URLEncoder.encode(udf1, "UTF-8");
+                data += "&" + URLEncoder.encode("udf2", "UTF-8") + "=" + URLEncoder.encode(udf2, "UTF-8");
+                data += "&" + URLEncoder.encode("udf3", "UTF-8") + "=" + URLEncoder.encode(udf3, "UTF-8");
+                data += "&" + URLEncoder.encode("udf4", "UTF-8") + "=" + URLEncoder.encode(udf4, "UTF-8");
+                data += "&" + URLEncoder.encode("udf5", "UTF-8") + "=" + URLEncoder.encode(udf5, "UTF-8");
 
-             } catch (JSONException e) {
-                 e.printStackTrace();
-             }
+                URL url = new URL("http://192.168.43.218/portinfo/getHashCode.php");
+                URLConnection conn = url.openConnection();
 
-             if(merchantHash.isEmpty() || merchantHash.equals("")) {
-                 Toast.makeText(BookingConfirmationActivity.this, "Could not generate hash", Toast.LENGTH_SHORT).show();
-             }
-             else {
-                 paymentParam.setMerchantHash(merchantHash);
-                 PayUmoneyFlowManager.startPayUMoneyFlow(paymentParam, BookingConfirmationActivity.this, R.style.AppTheme_default, false);
-                 //Toast.makeText(BookingConfirmationActivity.this, "Hash generated succesfully", Toast.LENGTH_SHORT).show();
-             }
-         }
+                conn.setDoOutput(true);
 
-         /*@Override
-         protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
-             if (requestCode == PayuConstants.PAYU_REQUEST_CODE) {
-                 if (data != null) {
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                Log.e("returning response", "cool");
 
-                     *//**
-                      * Here, data.getStringExtra("payu_response") ---> Implicit response sent by PayU
-                      * data.getStringExtra("result") ---> Response received from merchant's Surl/Furl
-                      *
-                      * PayU sends the same response to merchant server and in app. In response check the value of key "status"
-                      * for identifying status of transaction. There are two possible status like, success or failure
-                      * *//*
-                     new AlertDialog.Builder(this)
-                             .setCancelable(false)
-                             .setMessage("Payu's Data : " + data.getStringExtra("payu_response") + "\n\n\n Merchant's Data: " + data.getStringExtra("result"))
-                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                     dialog.dismiss();
-                                 }
-                             }).show();
+                wr.write(data);
+                wr.flush();
 
-                 } else {
-                     Toast.makeText(this, getString(R.string.could_not_receive_data), Toast.LENGTH_LONG).show();
-                 }
-             }
-         }*/
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+
+                // Read Server Response
+                while((line = reader.readLine()) != null) {
+                    sb.append(line);
+                    break;
+                }
+                return sb.toString();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.e("empty string", "lol");
+            return "";
+
+        }
+
+
+        @Override
+        protected void onPostExecute(String response) {
+
+            progressDialog.dismiss();
+
+            String merchantHash = "";
+
+            try {
+                JSONObject jsonObject = null;
+                jsonObject = new JSONObject(response);
+                merchantHash += jsonObject.getString("payment_hash");
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if(merchantHash.isEmpty() || merchantHash.equals("")) {
+                Toast.makeText(SpotBookingConfirmation.this, "Could not generate hash", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                paymentParam.setMerchantHash(merchantHash);
+                PayUmoneyFlowManager.startPayUMoneyFlow(paymentParam, SpotBookingConfirmation.this, R.style.AppTheme_default, false);
+                //Toast.makeText(BookingConfirmationActivity.this, "Hash generated succesfully", Toast.LENGTH_SHORT).show();
+            }
+        }
 
 
 
-     }
-
-
-
+    }
 }

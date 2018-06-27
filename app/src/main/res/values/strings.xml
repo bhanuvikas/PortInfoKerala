@@ -16,7 +16,7 @@
     <string name="port_name">Port Name : </string>
     <string name="zone_name">Zone Name :</string>
     <string name="quantity">Quantity :</string>
-    <string name="destination">Destination :</string>
+    <string name="destination">Select Sand Destination</string>
 
     <string-array name="port_names">
 
@@ -45,16 +45,24 @@
 
     </string-array>
     <string name="title_activity_place_picker">Map</string>
-    <string name="origin">Origin :</string>
+    <string name="origin">Select Origin Zone</string>
     <string name="distance_time">Distance and Time</string>
     <string name="confirm_booking">Confirm Booking</string>
-    <string name="distance">Distance :</string>
+    <string name="distance">Estimate Distance and Time</string>
     <string name="time">Time :</string>
     <string name="booking_details">Booking Details</string>
     <string name="pay_later">Pay Later</string>
     <string name="proceed_to_payment">Proceed To Payment</string>
     <string name="payment_details">Payment Details</string>
     <string name="proceed">Proceed</string>
+    <string name="spot_registration">Spot Registration</string>
+    <string name="spot_name">Name</string>
+    <string name="aadhar_no">Aadhar Number</string>
+    <string name="port_name_confirmation">Port Name:</string>
+    <string name="zone_name_confirmation">Zone Name:</string>
+    <string name="destination_confirmation">Destination: </string>
+    <string name="origin_confirmation">Origin: </string>
+    <string name="distance_confirmation">Distance:</string>
 
 
 </resources>

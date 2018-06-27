@@ -15,13 +15,15 @@
         android:layout_height="match_parent"
         android:background="#fef6af"
         android:padding="20dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="11">
 
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/port_name"
@@ -45,7 +47,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/zone_name"
@@ -69,7 +72,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/quantity"
@@ -96,12 +100,14 @@
             android:layout_height="wrap_content"
             android:text="@string/destination"
             android:background="@color/skyBlue"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/destination_tv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
 
 
         <Button
@@ -110,12 +116,14 @@
             android:layout_height="wrap_content"
             android:text="@string/origin"
             android:background="@color/skyBlue"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/origin_tv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/distance_btn"
@@ -123,17 +131,20 @@
             android:layout_height="wrap_content"
             android:text="@string/distance_time"
             android:background="@color/skyBlue"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/distance_tv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/time_tv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/confirm_booking_btn"
@@ -141,7 +152,8 @@
             android:layout_height="wrap_content"
             android:text="@string/confirm_booking"
             android:background="@color/skyBlue"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_weight="1"/>
 
     </LinearLayout>
 

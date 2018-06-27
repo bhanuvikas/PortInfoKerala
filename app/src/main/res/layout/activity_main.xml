@@ -76,7 +76,8 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="@string/phone_number"
-                        android:inputType="phone" />
+                        android:inputType="phone"
+                        android:id="@+id/phone_no_et"/>
                 </android.support.design.widget.TextInputLayout>
 
 
@@ -108,9 +109,11 @@
                     android:layout_gravity="center_horizontal"
                     android:background="@color/red"
                     android:text="@string/new_customer_registration"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="16dp"
+                    android:id="@+id/reg_btn2"/>
 
                 <Button
+                    android:id="@+id/spot_booking_btn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -120,9 +123,6 @@
             </LinearLayout>
 
         </LinearLayout>
-
-
-
 
 
         <LinearLayout
@@ -183,7 +183,8 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="@string/otp"
-                        android:inputType="number"/>
+                        android:inputType="number"
+                        android:id="@+id/otp_et"/>
                 </android.support.design.widget.TextInputLayout>
 
 
@@ -210,6 +211,7 @@
                 android:orientation="vertical">
 
                 <Button
+                    android:id="@+id/reg_btn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -218,6 +220,7 @@
                     android:layout_marginBottom="16dp"/>
 
                 <Button
+                    android:id="@+id/spot_booking_btn2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"

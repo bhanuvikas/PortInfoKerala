@@ -19,4 +19,9 @@
         <item name="colorAccent">@color/lightBrown</item>
     </style>
 
+    <style name="TextLabel" parent="TextAppearance.Design.Hint">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+
 </resources>

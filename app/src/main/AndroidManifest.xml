@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.bhanu.portinfokerala">
 
     <!--
@@ -8,14 +9,18 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
+        android:name=".Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/CustomAppTheme">
+        android:theme="@style/CustomAppTheme"
+        tools:replace="android:allowBackup">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +45,14 @@
         <activity
             android:name=".PlacePickerActivity"
             android:label="@string/title_activity_place_picker" />
-        <activity android:name=".BookingConfirmationActivity"></activity>
+        <activity android:name=".BookingConfirmationActivity" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="74c670e7e065abe9e11e94609d888dc907b1d751" />
+
+        <activity android:name=".SpotBooking" />
+        <activity android:name=".SpotBookingConfirmation"></activity>
     </application>
 
 </manifest>

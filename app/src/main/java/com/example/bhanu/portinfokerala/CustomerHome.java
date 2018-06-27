@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 public class CustomerHome extends AppCompatActivity {
@@ -48,6 +49,17 @@ public class CustomerHome extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        //Spot Booking
+        Button spot_booking_btn = (Button)findViewById(R.id.spot_booking_btn);
+        spot_booking_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(CustomerHome.this, "Spot Booking", Toast.LENGTH_SHORT).show();
+                Intent toSpotBooking = new Intent(CustomerHome.this, SpotBooking.class);
+                startActivity(toSpotBooking);
             }
         });
 

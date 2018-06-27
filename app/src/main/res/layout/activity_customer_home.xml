@@ -57,15 +57,15 @@
                     android:layout_height="100dp"
                     android:text="@string/sand_booking"
                     android:id="@+id/sand_booking_btn"
-                    android:background="#367fa9"
-                    android:layout_alignParentStart="true"/>
+                    android:background="@drawable/customer_options_btn"
+                    android:layout_alignParentStart="true" />
 
                 <Button
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:text="@string/booking_status"
                     android:id="@+id/booking_status_btn"
-                    android:background="#367fa9"
+                    android:background="@drawable/customer_options_btn"
                     android:layout_alignParentEnd="true"/>
 
             </RelativeLayout>
@@ -83,7 +83,7 @@
                     android:layout_height="100dp"
                     android:text="@string/booking_history"
                     android:id="@+id/booking_history_btn"
-                    android:background="#367fa9"
+                    android:background="@drawable/customer_options_btn"
                     android:layout_alignParentStart="true"/>
 
                 <Button
@@ -91,7 +91,7 @@
                     android:layout_height="100dp"
                     android:text="@string/complete_payment"
                     android:id="@+id/complete_payment_btn"
-                    android:background="#367fa9"
+                    android:background="@drawable/customer_options_btn"
                     android:layout_alignParentEnd="true"/>
 
             </RelativeLayout>
@@ -113,8 +113,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/spot_booking"
                     android:id="@+id/spot_booking_btn"
-                    android:background="#c23321"
-                    android:layout_marginTop="16dp"/>
+                    android:background="@drawable/button_red_bg"
+                    android:layout_marginTop="16dp" />
             </LinearLayout>
 
         </LinearLayout>
