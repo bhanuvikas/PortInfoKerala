@@ -1,10 +1,14 @@
 package com.example.bhanu.portinfokerala;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -86,8 +90,11 @@ public class SpotBooking extends AppCompatActivity {
     ArrayList<PortZoneDetails> pzDetails = new ArrayList<>();
     ArrayList<String> ports = new ArrayList<>();
     ArrayList<String> zones = new ArrayList<>();
+    ArrayList<Integer> balances = new ArrayList<>();
+    ArrayList<Integer> color_code = new ArrayList<>();
     String selectedPort = null;
     String selectedZone = null;
+    int selectedPostition = 0;
     Spinner portNamesSpinner;
     Spinner zoneNamesSpinner;
 
@@ -220,22 +227,30 @@ public class SpotBooking extends AppCompatActivity {
                             errorText.setText("Select quantity of sand");//changes the selected item text to this
                             Toast.makeText(SpotBooking.this, "Select quantity of Sand", Toast.LENGTH_SHORT).show();
                         } else {
-                            SpotBookingDetails details = new SpotBookingDetails();
-                            details.portName = port_name;
-                            details.zoneName = zone_name;
-                            details.quantity = quantity;
-                            details.destination = destinationDetails;
-                            details.origin = originDetails;
-                            details.distance = distance;
-                            details.time = time;
-                            details.name = spot_name;
-                            details.aadharNumber = aadhar_no;
-                            details.phoneNumber = phone_number;
+                            if(color_code.get(selectedPostition)==0) {
+                                show_alert("info", "Port not alloted", "This port is not alloted for SpotBooking Today!!!");
+                            } else {
+                                if(balances.get(selectedPostition)==0) {
+                                    show_alert("info", "Sand Sold", "The alloted sand for this port is sold!!! Please select another port");
+                                } else {
+                                    SpotBookingDetails details = new SpotBookingDetails();
+                                    details.portName = port_name;
+                                    details.zoneName = zone_name;
+                                    details.quantity = quantity;
+                                    details.destination = destinationDetails;
+                                    details.origin = originDetails;
+                                    details.distance = distance;
+                                    details.time = time;
+                                    details.name = spot_name;
+                                    details.aadharNumber = aadhar_no;
+                                    details.phoneNumber = phone_number;
 
-                            Intent toSpotBookingConfirmation = new Intent(SpotBooking.this, SpotBookingConfirmation.class);
-                            toSpotBookingConfirmation.putExtra("spot_booking_details", details);
-                            startActivity(toSpotBookingConfirmation);
-                            Log.d("In Sand booking", "StartActivity passed");
+                                    Intent toSpotBookingConfirmation = new Intent(SpotBooking.this, SpotBookingConfirmation.class);
+                                    toSpotBookingConfirmation.putExtra("spot_booking_details", details);
+                                    startActivity(toSpotBookingConfirmation);
+                                    Log.d("In Sand booking", "StartActivity passed");
+                                }
+                            }
                         }
                     }
                 }
@@ -243,8 +258,33 @@ public class SpotBooking extends AppCompatActivity {
         });
 
         Log.e("AfterExecute", "OMG are you kidding");
-    }
 
+
+    }
+    AlertDialog mMyDialog;
+    public void show_alert(String type, String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(SpotBooking.this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(SpotBooking.this);
+        }
+        builder.setMessage(message);
+        builder.setTitle(title);
+        if(type.equals("info")) {
+            builder.setIcon(android.R.drawable.ic_dialog_info);
+        }
+        builder.setCancelable(true);
+        builder.setPositiveButton(
+                "OK",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        mMyDialog.dismiss(); // dismiss AlertDialog
+                    }
+                });
+        mMyDialog = builder.show(); // assign AlertDialog
+    }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -388,7 +428,12 @@ public class SpotBooking extends AppCompatActivity {
                     record.port_id = row.getInt("port_id");
                     record.zone_id = row.getInt("port_zone_id");
                     record.zone_name = row.getString("zone_name");
-                    //record.spot_limit_balance = row.getInt("spot_limit_balance");
+                    record.spot_limit_balance = row.getInt("spot_limit_balance");
+                    if(record.spot_limit_balance == -1) {
+                        record.status = 0;
+                    } else {
+                        record.status = 1;
+                    }
                     Log.e("in onPostExecute ", "zone_name: " + record.zone_name);
                     pzDetails.add(record);
                     cnt++;
@@ -401,25 +446,52 @@ public class SpotBooking extends AppCompatActivity {
                 cnt = 0;
                 temp = 0;
                 ports.add(pzDetails.get(0).port_name);
+                if(pzDetails.get(0).status==0) {
+                    balances.add(0);
+                    color_code.add(0);
+                } else {
+                    balances.add(pzDetails.get(0).spot_limit_balance);
+                    color_code.add(1);
+                }
+
+
 
                 while(cnt < pzDetails.size()) {
                     if(!(ports.get(temp).equals(pzDetails.get(cnt).port_name))) {
                         ports.add(pzDetails.get(cnt).port_name);
+                        if(pzDetails.get(cnt).status==0) {
+                            balances.add(0);
+                            color_code.add(0);
+                        } else {
+                            balances.add(pzDetails.get(cnt).spot_limit_balance);
+                            color_code.add(1);
+                        }
                         temp++;
                     }
                     cnt++;
                 }
 
-                Log.e("in onPostExecute", ports.toString());
+
+
+                Log.e("in onPostExecute ports", ports.toString());
+                Log.e("in onPostExecute balanc", balances.toString());
+                Log.e("in onPostExecute color", color_code.toString());
+
+
+                //TODO: change this arrayAdapter to customAdapter
+
+                CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), ports, balances, color_code);
+
 
                 //Port Names Spinner
-                ArrayAdapter<String> portNameAdapter = new ArrayAdapter<String>(SpotBooking.this, android.R.layout.simple_spinner_item, ports);
-                portNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                portNamesSpinner.setAdapter(portNameAdapter);
+                //ArrayAdapter<String> portNameAdapter = new ArrayAdapter<String>(SpotBooking.this, android.R.layout.simple_spinner_item, ports);
+                //portNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                portNamesSpinner.setAdapter(customAdapter);
                 portNamesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        selectedPort = parent.getItemAtPosition(position).toString();
+                        selectedPort = ports.get(position);
+                        selectedPostition = position;
                         int cnt = 0;
                         zones.clear();
                         while(cnt < pzDetails.size()) {

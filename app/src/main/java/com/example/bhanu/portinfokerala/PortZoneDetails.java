@@ -8,7 +8,8 @@ public class PortZoneDetails {
     int zone_id;
     String port_name;
     String zone_name;
-    //int spot_limit_balance;
+    int spot_limit_balance;
+    int status;
 
     public String getPort_name() {
         return port_name;

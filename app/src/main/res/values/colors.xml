@@ -8,4 +8,6 @@
     <color name="lightBrown">#331a00</color>
     <color name="skyBlue">#367fa9</color>
     <color name="red">#c23321</color>
+    <color name="lightRed">#ff4d4d</color>
+    <color name="lightGreen">#5cd65c</color>
 </resources>
