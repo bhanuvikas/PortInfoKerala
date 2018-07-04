@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent toCustomerHome = new Intent(MainActivity.this, CustomerHome.class);
                     startActivity(toCustomerHome);
                     Toast.makeText(MainActivity.this, "Login Success!!", Toast.LENGTH_SHORT).show();
+                    finish();
                 } else {
                     otp_et.setError("Wrong OTP entered!!");
 
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 Uri uri = Uri.parse("http://portinfo.kerala.gov.in/index.php/Master/customerregistration_add");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 Uri uri = Uri.parse("http://portinfo.kerala.gov.in/index.php/Master/customerregistration_add");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -110,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent toSpotBooking = new Intent(MainActivity.this, SpotBooking.class);
                 startActivity(toSpotBooking);
+                finish();
             }
         });
 
@@ -121,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent toSpotBooking = new Intent(MainActivity.this, SpotBooking.class);
                 startActivity(toSpotBooking);
+                finish();
             }
         });
 
@@ -160,18 +165,19 @@ public class MainActivity extends AppCompatActivity {
                     urlConnection.setRequestMethod("POST");
                     Log.e("IndoInBackgroundTask", "before opening stream");
                     OutputStream os = urlConnection.getOutputStream();
-                    Log.e("IndoInBackgroundTask: ", "Output stream opeded");
+                    Log.e("current Background: ", "Output stream opeded");
                     BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                     String data = URLEncoder.encode("phone_no", "UTF-8") + "=" + URLEncoder.encode(phone_no, "UTF-8");
                     bw.write(data);
                     bw.flush();
                     bw.close();
-
+                    Log.e("IndoInBackgroundTask: ", "Data Written to connection");
                     InputStream is = urlConnection.getInputStream();
                     BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
                     StringBuilder sb = new StringBuilder();
                     String line = null;
+                    Log.e("IndoInBackgroundTask", "Starting reading response");
                     while ((line = br.readLine())!=null) {
                         sb.append(line);
                     }

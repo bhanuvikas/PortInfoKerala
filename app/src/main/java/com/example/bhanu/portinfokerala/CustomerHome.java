@@ -15,6 +15,8 @@ public class CustomerHome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_home);
 
+
+
         //Sand Booking
         Button sand_booking_btn = (Button)findViewById(R.id.sand_booking_btn);
         sand_booking_btn.setOnClickListener(new View.OnClickListener() {
@@ -64,4 +66,14 @@ public class CustomerHome extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
+
 }

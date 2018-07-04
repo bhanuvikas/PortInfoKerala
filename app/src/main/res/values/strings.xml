@@ -63,6 +63,7 @@
     <string name="destination_confirmation">Destination: </string>
     <string name="origin_confirmation">Origin: </string>
     <string name="distance_confirmation">Distance:</string>
+    <string name="pay_offline">Pay Offline</string>
 
 
 </resources>

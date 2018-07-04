@@ -1,10 +1,18 @@
 package com.example.bhanu.portinfokerala;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,18 +27,32 @@ import android.widget.Toast;
 
 import com.payumoney.core.PayUmoneyConfig;
 import com.payumoney.core.PayUmoneySdkInitializer;
+import com.payumoney.core.entity.TransactionResponse;
 import com.payumoney.sdkui.ui.utils.PayUmoneyFlowManager;
+import com.payumoney.sdkui.ui.utils.ResultModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SpotBookingConfirmation extends AppCompatActivity {
 
@@ -39,6 +61,7 @@ public class SpotBookingConfirmation extends AppCompatActivity {
     public double price;
     String key = "vupGJOnU";
     String salt = "d3sTxYdWZn";
+    SpotBookingDetails details;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +71,7 @@ public class SpotBookingConfirmation extends AppCompatActivity {
 
         Log.d("Entering Confirmation", "Entered");
         Intent fromSpotBooking = getIntent();
-        final SpotBookingDetails details = (SpotBookingDetails) fromSpotBooking.getSerializableExtra("spot_booking_details");
+        details = (SpotBookingDetails) fromSpotBooking.getSerializableExtra("spot_booking_details");
 
         TextView port_confirmation_tv = (TextView) findViewById(R.id.port_name_confirmation);
         TextView zone_confirmation_tv = (TextView) findViewById(R.id.zone_name_confirmation);
@@ -57,9 +80,9 @@ public class SpotBookingConfirmation extends AppCompatActivity {
         TextView destination_confirmation = (TextView) findViewById(R.id.destination_confirmation);
         TextView distane_confirmation = (TextView) findViewById(R.id.distance_confirmation);
         TextView time_confirmation = (TextView) findViewById(R.id.time_confirmation);
-        TextView name_confirmation = (TextView) findViewById(R.id.spot_name_tv);
-        TextView aadhar_confirmation = (TextView) findViewById(R.id.aadhar_no_tv);
-        TextView phone_confirmation = (TextView) findViewById(R.id.phone_no_tv);
+        final TextView name_confirmation = (TextView) findViewById(R.id.spot_name_tv);
+        final TextView aadhar_confirmation = (TextView) findViewById(R.id.aadhar_no_tv);
+        final TextView phone_confirmation = (TextView) findViewById(R.id.phone_no_tv);
 
         port_confirmation_tv.setText(details.portName);
         zone_confirmation_tv.setText(details.zoneName);
@@ -72,6 +95,7 @@ public class SpotBookingConfirmation extends AppCompatActivity {
         aadhar_confirmation.setText(details.aadharNumber);
         phone_confirmation.setText(details.phoneNumber);
 
+        checkPermissions();
 
         //confirming booking details and so displaying payment options
         final LinearLayout ll = (LinearLayout) findViewById(R.id.invisible_ll);
@@ -89,7 +113,7 @@ public class SpotBookingConfirmation extends AppCompatActivity {
         Button final_proceed_btn = (Button)findViewById(R.id.final_proceed_btn);
         RadioGroup payment_decision_radio = (RadioGroup) findViewById(R.id.payment_decision_radio);
         final RadioButton proceed_to_payment = (RadioButton) findViewById(R.id.proceed_to_payment);
-        final RadioButton pay_later = (RadioButton) findViewById(R.id.pay_later);
+        final RadioButton pay_offline = (RadioButton) findViewById(R.id.pay_offline);
 
         final_proceed_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,7 +123,7 @@ public class SpotBookingConfirmation extends AppCompatActivity {
                     price = (double) Character.getNumericValue(details.quantity.charAt(0));
                     launchPayUMoney();
                 }
-                else if(pay_later.isChecked())
+                else if(pay_offline.isChecked())
                 {
                     AlertDialog.Builder builder;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -108,7 +132,7 @@ public class SpotBookingConfirmation extends AppCompatActivity {
                         builder = new AlertDialog.Builder(SpotBookingConfirmation.this);
                     }
                     builder.setTitle("Booking successful")
-                            .setMessage("You have booked sand successfully and you can pay later through complete payment option in your dashboard")
+                            .setMessage("You can use the challan which is downloading for offline payment. Check it in your downloads!!!")
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     Intent toCustomerHome = new Intent(SpotBookingConfirmation.this, CustomerHome.class);
@@ -122,6 +146,14 @@ public class SpotBookingConfirmation extends AppCompatActivity {
                             })
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show();
+
+
+
+                    GetChallanFromServerTask getChallanFromServerTask = new GetChallanFromServerTask();
+
+                    getChallanFromServerTask.execute();
+
+
                 }
                 else
                 {
@@ -132,6 +164,63 @@ public class SpotBookingConfirmation extends AppCompatActivity {
         });
 
     }
+
+
+    /**
+     * permissions request code
+     */
+    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+
+    /**
+     * Permissions that need to be explicitly requested from end user.
+     */
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
+            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+
+    /**
+     * Checks the dynamically-controlled permissions and requests missing permissions from end user.
+     */
+    protected void checkPermissions() {
+        final List<String> missingPermissions = new ArrayList<String>();
+        // check all required dynamic permissions
+        for (final String permission : REQUIRED_SDK_PERMISSIONS) {
+            final int result = ContextCompat.checkSelfPermission(this, permission);
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                missingPermissions.add(permission);
+            }
+        }
+        if (!missingPermissions.isEmpty()) {
+            // request all missing permissions
+            final String[] permissions = missingPermissions
+                    .toArray(new String[missingPermissions.size()]);
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
+        } else {
+            final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
+            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
+            onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
+                    grantResults);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                for (int index = permissions.length - 1; index >= 0; --index) {
+                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+                        // exit the app if one permission is not granted
+                        Toast.makeText(this, "Required permission '" + permissions[index]
+                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
+                    }
+                }
+                // all permissions were granted
+                break;
+        }
+    }
+
 
     /**
      * This was for testing
@@ -197,7 +286,7 @@ public class SpotBookingConfirmation extends AppCompatActivity {
                 .setUdf3(udf3)
                 .setUdf4(udf4)
                 .setUdf5(udf5)
-                .setIsDebug(true)
+                .setIsDebug(Environment.TEST.debug())
                 .setKey(Environment.TEST.merchant_Key())
                 .setMerchantId(Environment.TEST.merchant_ID());
 
@@ -326,4 +415,207 @@ public class SpotBookingConfirmation extends AppCompatActivity {
 
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result Code is -1 send from Payumoney activity
+        Log.d("onActivityResult", "request code " + requestCode + " resultcode " + resultCode);
+        if (requestCode == PayUmoneyFlowManager.REQUEST_CODE_PAYMENT && resultCode == RESULT_OK && data != null) {
+            TransactionResponse transactionResponse = data.getParcelableExtra( PayUmoneyFlowManager.INTENT_EXTRA_TRANSACTION_RESPONSE );
+
+            ResultModel resultModel = data.getParcelableExtra(PayUmoneyFlowManager.ARG_RESULT);
+
+
+            if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
+
+                if(transactionResponse.getTransactionStatus().equals( TransactionResponse.TransactionStatus.SUCCESSFUL )){
+                    Toast.makeText(SpotBookingConfirmation.this, "Payment Successfull!!!",
+                            Toast.LENGTH_LONG).show();
+                } else{
+                    Toast.makeText(SpotBookingConfirmation.this, "Payment Failure!!!",
+                            Toast.LENGTH_LONG).show();
+                }
+
+                // Response from Payumoney
+                String payuResponse = transactionResponse.getPayuResponse();
+                Log.e("PayUResponse: ", payuResponse);
+                // Response from SURl and FURL
+                String merchantResponse = transactionResponse.getTransactionDetails();
+                Log.e("TransationDetails", merchantResponse);
+            }  else if (resultModel != null && resultModel.getError() != null) {
+                Log.e("Error response : " ,  resultModel.getError().getTransactionResponse().toString());
+            } else {
+                Log.e("Both objects are null!", " ");
+            }
+        }
+    }
+
+    private class GetChallanFromServerTask extends AsyncTask<String, String, String> {
+
+        private ProgressDialog progressDialog;
+
+
+        @Override
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(SpotBookingConfirmation.this);
+            progressDialog.setMessage("Please wait...");
+            progressDialog.show();
+            Log.e("InpreExecute", "nothing");
+
+        }
+
+        @Override
+        protected String doInBackground(String... postParams) {
+
+            String challanURL = "http://192.168.43.218/portinfo/challan.pdf";
+            Log.e("IndoInBackgroundTask", "outside");
+            try {
+                URL url = new URL(challanURL);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setDoOutput(true);
+                urlConnection.connect();
+                String PATH = android.os.Environment.getExternalStorageDirectory() + "/Download/";
+                File file = new File(PATH);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                File outputFile = new File(file, "challan.pdf");
+
+
+                FileOutputStream fo = new FileOutputStream(outputFile);
+                InputStream is = urlConnection.getInputStream();
+                byte[] buffer = new byte[1024];
+                int len1 = 0;
+                while ((len1 = is.read(buffer)) != -1) {
+                    fo.write(buffer, 0, len1);
+                }
+                fo.flush();
+                fo.close();
+                is.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return "";
+
+
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+
+            super.onPostExecute(response);
+            super.onPostExecute(response);
+            progressDialog.dismiss();
+            Log.e("InpostExecute response:", response);
+            WriteOfflineDetails writeOfflineDetails = new WriteOfflineDetails();
+            writeOfflineDetails.execute(details.name, details.aadharNumber, details.phoneNumber, details.quantity, details.destination, "Go Straight and take a dive into hell",  details.distance, details.origin, "You want a challan", details.quantity, "192.16.123.123", details.zoneName, "0" );
+
+        }
+    }
+
+    private class WriteOfflineDetails extends AsyncTask<String, String, String> {
+
+        private ProgressDialog progressDialog;
+
+
+        @Override
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(SpotBookingConfirmation.this);
+            progressDialog.setMessage("Please wait...");
+            progressDialog.show();
+            Log.e("InpreExecute", "nothing");
+
+        }
+
+        @Override
+        protected String doInBackground(String... postParams) {
+            String name = postParams[0];
+            String aadhar = postParams[1];
+            String phone_no = postParams[2];
+            String quantity = postParams[3];
+            String destination = postParams[4];
+            String route = postParams[5];
+            String distance = postParams[6];
+            String origin = postParams[7];
+            String challan = postParams[8];
+            String amount = postParams[9];
+            String ip_addr = postParams[10];
+            String zone = postParams[11];
+            String status = postParams[12];
+
+            String data = null;
+            try {
+                data = URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(name, "UTF-8") + "&" +
+                        URLEncoder.encode("aadhar", "UTF-8") + "=" + URLEncoder.encode(aadhar, "UTF-8") + "&" +
+                        URLEncoder.encode("phone_no", "UTF-8") + "=" + URLEncoder.encode(phone_no, "UTF-8") + "&" +
+                        URLEncoder.encode("quantity", "UTF-8") + "=" + URLEncoder.encode(quantity, "UTF-8") + "&" +
+                        URLEncoder.encode("destination", "UTF-8") + "=" + URLEncoder.encode(destination, "UTF-8") + "&" +
+                        URLEncoder.encode("route", "UTF-8") + "=" + URLEncoder.encode(route, "UTF-8") + "&" +
+                        URLEncoder.encode("distance", "UTF-8") + "=" + URLEncoder.encode(distance, "UTF-8") + "&" +
+                        URLEncoder.encode("origin", "UTF-8") + "=" + URLEncoder.encode(origin, "UTF-8") + "&" +
+                        URLEncoder.encode("challan", "UTF-8") + "=" + URLEncoder.encode(challan, "UTF-8") + "&" +
+                        URLEncoder.encode("amount", "UTF-8") + "=" + URLEncoder.encode(amount, "UTF-8") + "&" +
+                        URLEncoder.encode("ip_addr", "UTF-8") + "=" + URLEncoder.encode(ip_addr, "UTF-8") + "&" +
+                        URLEncoder.encode("zone", "UTF-8") + "=" + URLEncoder.encode(zone, "UTF-8") + "&" +
+                        URLEncoder.encode("status", "UTF-8") + "=" + URLEncoder.encode(status, "UTF-8");
+
+                URL writeURL = new URL("http://192.168.43.218/portinfo/writeOfflineDetails.php");
+                HttpURLConnection urlConnection = (HttpURLConnection) writeURL.openConnection();
+                Log.e("IndoInBackgroundTask", "after opening connection");
+                urlConnection.setDoOutput(true);
+                urlConnection.setRequestMethod("POST");
+                Log.e("IndoInBackgroundTask", "before opening stream");
+                OutputStream os = urlConnection.getOutputStream();
+                Log.e("current background: ", "Output stream opeded");
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                bw.write(data);
+                bw.flush();
+                bw.close();
+
+                Log.e("inDoINBackGround:", "started reading response");
+                InputStream is = urlConnection.getInputStream();
+                Log.e("inDoINBackground", "got input stream");
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                Log.e("inDoInBackground", "created br");
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+                while ((line = br.readLine())!=null) {
+                    Log.e("indoinbackground", "in while");
+                    sb.append(line);
+                }
+
+                Log.e("inDoinbackaoid", "out while");
+                Log.e("doInBackgroundResponse", sb.toString());
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+
+            super.onPostExecute(response);
+            super.onPostExecute(response);
+            progressDialog.dismiss();
+            Log.e("InpostExecute response:", response);
+
+        }
+    }
+
 }
+
+

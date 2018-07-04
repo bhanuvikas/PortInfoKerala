@@ -357,10 +357,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/proceed_to_payment"/>
-                    <RadioButton android:id="@+id/pay_later"
+                    <RadioButton android:id="@+id/pay_offline"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/pay_later" />
+                        android:text="@string/pay_offline" />
                 </RadioGroup>
 
                 <Button

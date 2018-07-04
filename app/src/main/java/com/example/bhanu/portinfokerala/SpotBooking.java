@@ -386,7 +386,7 @@ public class SpotBooking extends AppCompatActivity {
                     urlConnection.setRequestMethod("POST");
                     Log.e("IndoInBackgroundTask", "before opening stream");
                     OutputStream os = urlConnection.getOutputStream();
-                    Log.e("IndoInBackgroundTask: ", "Output stream opeded");
+                    Log.e("old background: ", "Output stream opeded");
                     InputStream is = urlConnection.getInputStream();
                     BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 

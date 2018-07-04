@@ -1,160 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SandBooking"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#fef6af"
-    android:fillViewport="true">
-
+    android:fillViewport="true"
+    android:gravity="center_vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#fef6af"
-        android:padding="20dp"
-        android:orientation="vertical"
-        android:weightSum="11">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
 
-        <RelativeLayout
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_weight="1">
+            android:text="@string/sand_booking"
+            android:textSize="24sp"
+            android:gravity = "center"
+            android:textColor="@color/lightBrown"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/layout_bg"
+            android:layout_marginBottom="@dimen/dimen_12dp"
+            android:padding="@dimen/dimen_12dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/port_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/port_name"
+                    android:textColor="@color/skyBlue"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/port_name_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@+id/port_name"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="4dp"
+                    android:prompt="@string/port_name" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/zone_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zone_name"
+                    android:textColor="@color/skyBlue"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/zone_name_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@+id/zone_name"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginTop="4dp"
+                    android:prompt="@string/zone_name"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/quantity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/quantity"
+                    android:textColor="@color/skyBlue"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/quantity_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@+id/quantity"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginTop="4dp"
+                    android:prompt="@string/quantity"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/dimen_12dp"
+            android:layout_gravity="center">
+
+
+            <Button
+                android:id="@+id/destination_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/button_bg"
+                android:text="@string/destination" />
 
             <TextView
-                android:id="@+id/port_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/port_name"
-                android:textSize="16sp"
-                android:textColor="@color/skyBlue"/>
-            <Spinner
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/port_name_spinner"
-                android:layout_alignParentEnd="true"
-                android:prompt="@string/port_name"
-                android:layout_below="@+id/port_name"
-                android:layout_marginTop="4dp"
-                android:layout_marginLeft="24dp">
-            </Spinner>
-        </RelativeLayout>
+                android:id="@+id/destination_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_weight="1">
+            <Button
+                android:id="@+id/origin_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/button_bg"
+                android:text="@string/origin" />
 
             <TextView
-                android:id="@+id/zone_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/zone_name"
-                android:textSize="16sp"
-                android:textColor="@color/skyBlue"/>
-            <Spinner
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/zone_name_spinner"
-                android:layout_alignParentEnd="true"
-                android:prompt="@string/zone_name"
-                android:layout_below="@+id/zone_name"
-                android:layout_marginTop="4dp"
-                android:layout_marginLeft="24dp">
-            </Spinner>
-        </RelativeLayout>
+                android:id="@+id/origin_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/distance_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/button_bg"
+                android:text="@string/distance_time" />
 
             <TextView
-                android:id="@+id/quantity"
+                android:id="@+id/distance_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/time_tv"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/quantity"
-                android:textSize="16sp"
-                android:textColor="@color/skyBlue"/>
-            <Spinner
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/quantity_spinner"
-                android:layout_alignParentEnd="true"
-                android:prompt="@string/quantity"
-                android:layout_below="@+id/quantity"
-                android:layout_marginTop="4dp"
-                android:layout_marginLeft="24dp">
-            </Spinner>
-        </RelativeLayout>
-
-        <Button
-            android:id="@+id/destination_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/destination"
-            android:background="@color/skyBlue"
-            android:textSize="16sp"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/destination_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+                android:layout_height="wrap_content" />
 
 
-        <Button
-            android:id="@+id/origin_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/origin"
-            android:background="@color/skyBlue"
-            android:textSize="16sp"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/origin_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <Button
-            android:id="@+id/distance_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/distance_time"
-            android:background="@color/skyBlue"
-            android:textSize="16sp"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/distance_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/time_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/confirm_booking_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/confirm_booking"
-            android:background="@color/skyBlue"
-            android:textSize="16sp"
-            android:layout_weight="1"/>
+            android:background="@drawable/button_red_bg"
+            android:text="@string/confirm_booking" />
+
 
     </LinearLayout>
+
 
 </ScrollView>
