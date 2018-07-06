@@ -49,6 +49,8 @@
                     android:textColor="@color/skyBlue"
                     android:textSize="16sp" />
 
+
+
                 <Spinner
                     android:id="@+id/port_name_spinner"
                     android:layout_width="match_parent"

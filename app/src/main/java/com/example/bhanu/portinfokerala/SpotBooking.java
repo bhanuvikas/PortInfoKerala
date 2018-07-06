@@ -111,8 +111,8 @@ public class SpotBooking extends AppCompatActivity {
         method = "getPorts";
         portNamesSpinner = (Spinner) findViewById(R.id.port_name_spinner);
         zoneNamesSpinner = (Spinner) findViewById(R.id.zone_name_spinner);
-        BackgroundTask backgroundTask = new BackgroundTask();
-        backgroundTask.execute(method);
+        GetPortsBackgroundTask getPortsBackgroundTask = new GetPortsBackgroundTask();
+        getPortsBackgroundTask.execute(method);
 
 
 
@@ -354,7 +354,7 @@ public class SpotBooking extends AppCompatActivity {
     }
 
 
-    public class BackgroundTask extends AsyncTask<String, String, String> {
+    public class GetPortsBackgroundTask extends AsyncTask<String, String, String> {
 
         private ProgressDialog progressDialog;
 
@@ -373,7 +373,7 @@ public class SpotBooking extends AppCompatActivity {
         protected String doInBackground(String... params) {
 
             String method = params[0];
-            String getPortsURL = "http://192.168.43.218/portinfo/getPorts.php";
+            String getPortsURL = "http://192.168.43.218/portinfo/getSpotPorts.php";
             Log.e("IndoInBackgroundTask", "outside");
             Log.e("IndoInBackgroundTask", method);
             if(method.equals("getPorts")) {

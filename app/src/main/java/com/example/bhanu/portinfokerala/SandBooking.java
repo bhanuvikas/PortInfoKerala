@@ -1,11 +1,18 @@
 package com.example.bhanu.portinfokerala;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -17,6 +24,19 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
 public class SandBooking extends AppCompatActivity {
 
@@ -53,6 +73,18 @@ public class SandBooking extends AppCompatActivity {
     LatLng destinationLatLng;
     LatLng originLatLng;
 
+    String method;
+
+    ArrayList<PortZones> portZones = new ArrayList<>();
+    ArrayList<String> ports = new ArrayList<>();
+    ArrayList<String> zones = new ArrayList<>();
+    String selectedPort = null;
+    String selectedZone = null;
+    int selectedPostition = 0;
+    Spinner portNamesSpinner;
+    Spinner zoneNamesSpinner;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,25 +94,19 @@ public class SandBooking extends AppCompatActivity {
         origin_tv = (TextView) findViewById(R.id.origin_tv);
         distance_tv = (TextView) findViewById(R.id.distance_tv);
         time_tv = (TextView) findViewById(R.id.time_tv);
+        method = "getPorts";
+        portNamesSpinner = (Spinner) findViewById(R.id.port_name_spinner);
+        zoneNamesSpinner = (Spinner) findViewById(R.id.zone_name_spinner);
+        SandBooking.GetPortsBackgroundTask getPortsBackgroundTask = new GetPortsBackgroundTask();
+        getPortsBackgroundTask.execute(method);
 
-        //Port Names Spinner
-        Spinner portNamesSpinner = (Spinner) findViewById(R.id.port_name_spinner);
-        ArrayAdapter<CharSequence> portNameAdapter = ArrayAdapter.createFromResource(this, R.array.port_names, android.R.layout.simple_spinner_item);
-        portNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        portNamesSpinner.setAdapter(portNameAdapter);
-
-
-        //Zone Names Spinner
-        Spinner zoneNamesSpinner = (Spinner) findViewById(R.id.zone_name_spinner);
-        ArrayAdapter<CharSequence> zoneNameAdapter = ArrayAdapter.createFromResource(this, R.array.zone_names, android.R.layout.simple_spinner_item);
-        zoneNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        zoneNamesSpinner.setAdapter(zoneNameAdapter);
 
         //Quantity Spinner
         final Spinner quantitySpinner = (Spinner) findViewById(R.id.quantity_spinner);
         ArrayAdapter<CharSequence> quantityAdapter = ArrayAdapter.createFromResource(this, R.array.quantity, android.R.layout.simple_spinner_item);
         quantityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         quantitySpinner.setAdapter(quantityAdapter);
+
 
         //Destination Selector
         Button destination_btn = (Button) findViewById(R.id.destination_btn);
@@ -150,35 +176,41 @@ public class SandBooking extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
-                Spinner port_name_spinner = (Spinner)findViewById(R.id.port_name_spinner);
-                port_name = port_name_spinner.getSelectedItem().toString();
-
-                Spinner zone_name_spinner = (Spinner)findViewById(R.id.zone_name_spinner);
-                zone_name = zone_name_spinner.getSelectedItem().toString();
+                port_name = selectedPort;
+                zone_name = selectedZone;
 
                 Spinner quantity_spinner = (Spinner)findViewById(R.id.quantity_spinner);
                 quantity = quantity_spinner.getSelectedItem().toString();
 
+                if(quantity.equals("Select")) {
+                    TextView errorText = (TextView)quantity_spinner.getSelectedView();
+                    errorText.setError("");
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText("Select quantity of sand");//changes the selected item text to this
+                    Toast.makeText(SandBooking.this, "Select quantity of Sand", Toast.LENGTH_SHORT).show();
+                } else {
 
-                BookingDetails details = new BookingDetails();
-                details.portName = port_name;
-                details.zoneName = zone_name;
-                details.quantity = quantity;
-                details.destination = destinationDetails;
-                details.origin = originDetails;
-                details.distance = distance;
-                details.time = time;
+                    BookingDetails details = new BookingDetails();
+                    details.portName = port_name;
+                    details.zoneName = zone_name;
+                    details.quantity = quantity;
+                    details.destination = destinationDetails;
+                    details.origin = originDetails;
+                    details.distance = distance;
+                    details.time = time;
 
-                Intent toBookingConfirmation = new Intent(SandBooking.this, BookingConfirmationActivity.class);
-                toBookingConfirmation.putExtra("booking_details", details);
-                startActivity(toBookingConfirmation);
-                Log.d("In Sand booking", "StartActivity passed");
+                    Intent toBookingConfirmationActivity = new Intent(SandBooking.this, BookingConfirmationActivity.class);
+                    toBookingConfirmationActivity.putExtra("booking_details", details);
+                    startActivity(toBookingConfirmationActivity);
+                    Log.d("In Sand booking", "StartActivity passed");
+                }
+
             }
         });
 
-
+        Log.e("AfterExecute", "OMG are you kidding");
     }
+
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -248,6 +280,160 @@ public class SandBooking extends AppCompatActivity {
         }
 
 
+
+    public class GetPortsBackgroundTask extends AsyncTask<String, String, String> {
+
+        private ProgressDialog progressDialog;
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(SandBooking.this);
+            progressDialog.setMessage("Please wait...");
+            progressDialog.show();
+            Log.e("InpreExecute", "nothing");
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String method = params[0];
+            String getPortsURL = "http://192.168.43.218/portinfo/getPorts.php";
+            Log.e("IndoInBackgroundTask", "outside");
+            Log.e("IndoInBackgroundTask", method);
+            if(method.equals("getPorts")) {
+
+                try {
+                    URL url = new URL(getPortsURL);
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    Log.e("IndoInBackgroundTask", "after opening connection");
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setRequestMethod("POST");
+                    Log.e("IndoInBackgroundTask", "before opening stream");
+                    OutputStream os = urlConnection.getOutputStream();
+                    Log.e("old background: ", "Output stream opeded");
+                    InputStream is = urlConnection.getInputStream();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = br.readLine())!=null) {
+                        sb.append(line);
+                    }
+
+                    Log.e("doInBackgroundResponse", sb.toString());
+                    return sb.toString();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            return "";
+
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            super.onPostExecute(response);
+            progressDialog.dismiss();
+            //Log.e("in onPostExecute", response);
+
+            try {
+                int cnt, temp;
+                Log.e("in onPostExecute", "in TryBlock");
+                JSONObject root = new JSONObject(response);
+                JSONArray result = root.getJSONArray("result");
+                Log.e("in onPostExecute", result.toString());
+                cnt = 0;
+                while(cnt<result.length()) {
+                    JSONObject row = result.getJSONObject(cnt);
+                    PortZones record = new PortZones();
+                    record.port_name = row.getString("port_name");
+                    record.port_id = row.getInt("port_id");
+                    record.zone_id = row.getInt("port_zone_id");
+                    record.zone_name = row.getString("zone_name");
+                    portZones.add(record);
+                    cnt++;
+                }
+                cnt = 0;
+                temp = 0;
+                ports.add(portZones.get(0).port_name);
+
+                while(cnt < portZones.size()) {
+                    if(!(ports.get(temp).equals(portZones.get(cnt).port_name))) {
+                        ports.add(portZones.get(cnt).port_name);
+
+                        temp++;
+                    }
+                    cnt++;
+                }
+
+                Log.e("in onPostExecute ports", ports.toString());
+
+
+                //TODO: change this arrayAdapter to customAdapter
+
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, ports);
+                CustomAdapterForPadding customAdapterForPadding = new CustomAdapterForPadding(getApplicationContext(), ports);
+
+
+
+                portNamesSpinner.setAdapter(customAdapterForPadding);
+                portNamesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        selectedPort = ports.get(position);
+                        selectedPostition = position;
+                        int cnt = 0;
+                        zones.clear();
+                        while(cnt < portZones.size()) {
+                            if(portZones.get(cnt).port_name.equals(selectedPort)) {
+                                zones.add(portZones.get(cnt).zone_name);
+                            }
+                            cnt++;
+                        }
+                        //Zone Names Spinner
+                        ArrayAdapter<String> zoneNameAdapter = new ArrayAdapter<String>(SandBooking.this, android.R.layout.simple_spinner_item, zones);
+                        zoneNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        zoneNamesSpinner.setAdapter(zoneNameAdapter);
+                        zoneNamesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                selectedZone = parent.getItemAtPosition(position).toString();
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
+
+
+
+
+
+            } catch (JSONException e) {
+                Log.e("in onPostExecute", "in catch");
+                e.printStackTrace();
+            }
+
+        }
+
     }
+
+
+
+}
 
 

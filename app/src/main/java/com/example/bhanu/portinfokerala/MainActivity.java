@@ -2,6 +2,7 @@ package com.example.bhanu.portinfokerala;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.TextInputEditText;
@@ -71,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
                 if(otp.equals("0000")) {
                     Intent toCustomerHome = new Intent(MainActivity.this, CustomerHome.class);
                     startActivity(toCustomerHome);
+
+                    SharedPreferences prefs = getSharedPreferences("portinfo", MODE_PRIVATE);
+                    prefs.edit().putString("phone_number", phone_no).apply();
+
                     Toast.makeText(MainActivity.this, "Login Success!!", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {

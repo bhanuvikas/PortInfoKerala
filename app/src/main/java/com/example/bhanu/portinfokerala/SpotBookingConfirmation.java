@@ -265,14 +265,12 @@ public class SpotBookingConfirmation extends AppCompatActivity {
         String productName = "Sand";
         String firstName = "Bhanu vikas";
         String email = "yagantibhanuvikas@gmail.com";
-        String udf1 = "";
-        String udf2 = "";
-        String udf3 = "";
-        String udf4 = "";
-        String udf5 = "";
+        String udf1 = details.destination.replaceAll("[^a-zA-Z]", "");
+        String udf2 = details.origin.replaceAll("[^a-zA-Z]", "");
+        String udf3 = details.aadharNumber;
+        String udf4 = details.zoneName;
+        String udf5 = details.distance;
 
-        Application application = new Application();
-        Environment appEnvironment = application.getEnvironment();
         builder.setAmount(price)
                 .setTxnId(txnId)
                 .setPhone(phone)
@@ -286,7 +284,7 @@ public class SpotBookingConfirmation extends AppCompatActivity {
                 .setUdf3(udf3)
                 .setUdf4(udf4)
                 .setUdf5(udf5)
-                .setIsDebug(Environment.TEST.debug())
+                .setIsDebug(true)
                 .setKey(Environment.TEST.merchant_Key())
                 .setMerchantId(Environment.TEST.merchant_ID());
 
@@ -431,15 +429,48 @@ public class SpotBookingConfirmation extends AppCompatActivity {
             if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
 
                 if(transactionResponse.getTransactionStatus().equals( TransactionResponse.TransactionStatus.SUCCESSFUL )){
+                    //Successfull Transaction
                     Toast.makeText(SpotBookingConfirmation.this, "Payment Successfull!!!",
                             Toast.LENGTH_LONG).show();
                 } else{
+                    //Failure Transaction
                     Toast.makeText(SpotBookingConfirmation.this, "Payment Failure!!!",
                             Toast.LENGTH_LONG).show();
                 }
 
                 // Response from Payumoney
                 String payuResponse = transactionResponse.getPayuResponse();
+                try {
+                    JSONObject response = new JSONObject(payuResponse);
+                    JSONObject result = response.getJSONObject("result");
+                    String name = result.getString("firstname");
+                    String aadhar = result.getString("udf3");      //
+                    String phone = result.getString("phone");
+                    String quantity = result.getString("amount");    //
+                    String destination = result.getString("udf1"); //
+                    String route = "Origin to Destination";       //
+                    String distance = result.getString("udf5");   //
+                    String origin = result.getString("udf2");      //
+                    String challan = "challan";
+                    String amount = result.getString("amount");
+                    String ip_addr = "192.16.123.123";
+                    String zone = result.getString("udf4");    //
+                    String status;
+                    if(result.getString("status").equals("success")) {
+                        status = "1";
+                    } else status = "2";
+
+                    WriteDetailsForSpotBooking writeDetailsForSpotBooking = new WriteDetailsForSpotBooking();
+                    writeDetailsForSpotBooking.execute(name, aadhar, phone, quantity, destination, route,  distance, origin, challan, amount, ip_addr, zone, status );
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 Log.e("PayUResponse: ", payuResponse);
                 // Response from SURl and FURL
                 String merchantResponse = transactionResponse.getTransactionDetails();
@@ -451,6 +482,8 @@ public class SpotBookingConfirmation extends AppCompatActivity {
             }
         }
     }
+
+
 
     private class GetChallanFromServerTask extends AsyncTask<String, String, String> {
 
@@ -515,13 +548,13 @@ public class SpotBookingConfirmation extends AppCompatActivity {
             super.onPostExecute(response);
             progressDialog.dismiss();
             Log.e("InpostExecute response:", response);
-            WriteOfflineDetails writeOfflineDetails = new WriteOfflineDetails();
-            writeOfflineDetails.execute(details.name, details.aadharNumber, details.phoneNumber, details.quantity, details.destination, "Go Straight and take a dive into hell",  details.distance, details.origin, "You want a challan", details.quantity, "192.16.123.123", details.zoneName, "0" );
+            WriteDetailsForSpotBooking writeDetailsForSpotBooking = new WriteDetailsForSpotBooking();
+            writeDetailsForSpotBooking.execute(details.name, details.aadharNumber, details.phoneNumber, details.quantity, details.destination, "Go Straight and take a dive into hell",  details.distance, details.origin, "You want a challan", details.quantity, "192.16.123.123", details.zoneName, "0" );
 
         }
     }
 
-    private class WriteOfflineDetails extends AsyncTask<String, String, String> {
+    private class WriteDetailsForSpotBooking extends AsyncTask<String, String, String> {
 
         private ProgressDialog progressDialog;
 
@@ -569,7 +602,7 @@ public class SpotBookingConfirmation extends AppCompatActivity {
                         URLEncoder.encode("zone", "UTF-8") + "=" + URLEncoder.encode(zone, "UTF-8") + "&" +
                         URLEncoder.encode("status", "UTF-8") + "=" + URLEncoder.encode(status, "UTF-8");
 
-                URL writeURL = new URL("http://192.168.43.218/portinfo/writeOfflineDetails.php");
+                URL writeURL = new URL("http://192.168.43.218/portinfo/writeDetailsForSpotBooking.php");
                 HttpURLConnection urlConnection = (HttpURLConnection) writeURL.openConnection();
                 Log.e("IndoInBackgroundTask", "after opening connection");
                 urlConnection.setDoOutput(true);

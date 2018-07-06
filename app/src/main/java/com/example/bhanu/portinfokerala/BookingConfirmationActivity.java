@@ -3,6 +3,7 @@ package com.example.bhanu.portinfokerala;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
@@ -22,7 +23,9 @@ import com.crashlytics.android.Crashlytics;
 import com.payumoney.core.PayUmoneyConfig;
 import com.payumoney.core.PayUmoneyConstants;
 import com.payumoney.core.PayUmoneySdkInitializer;
+import com.payumoney.core.entity.TransactionResponse;
 import com.payumoney.sdkui.ui.utils.PayUmoneyFlowManager;
+import com.payumoney.sdkui.ui.utils.ResultModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,9 +33,11 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -50,16 +55,20 @@ public class BookingConfirmationActivity extends AppCompatActivity {
     public double price;
     String key = "vupGJOnU";
     String salt = "d3sTxYdWZn";
-
+    BookingDetails details;
+    String phone_no;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking_confirmation);
 
+        SharedPreferences prefs = getSharedPreferences("portinfo", MODE_PRIVATE);
+        phone_no = prefs.getString("phone_number", "UNKNOWN");
+
 
         Log.d("Entering Confirmation", "Entered");
         Intent fromSandBooking = getIntent();
-        final BookingDetails details = (BookingDetails) fromSandBooking.getSerializableExtra("booking_details");
+        details = (BookingDetails) fromSandBooking.getSerializableExtra("booking_details");
 
         TextView port_confirmation_tv = (TextView) findViewById(R.id.port_name_confirmation);
         TextView zone_confirmation_tv = (TextView) findViewById(R.id.zone_name_confirmation);
@@ -77,6 +86,8 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         destination_confirmation.setText(details.destination);
         distane_confirmation.setText(details.distance);
         time_confirmation.setText(details.time);
+
+
 
 
         //confirming booking details and so displaying payment options
@@ -128,6 +139,17 @@ public class BookingConfirmationActivity extends AppCompatActivity {
                             })
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show();
+
+
+                    String name = "";
+                    String route = details.origin + " to " + details.destination;
+                    String ip_addr = "192.16.123.123";
+                    String request_status = "0";
+                    String current_status = "0";
+                    WriteDetailsForSandBooking writeDetailsForSandBooking = new WriteDetailsForSandBooking();
+                    writeDetailsForSandBooking.execute(name, phone_no, details.quantity, details.destination, route, details.distance, details.origin, details.quantity, ip_addr, details.zoneName, current_status, request_status);
+
+
                 }
                 else
                 {
@@ -184,12 +206,11 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         String productName = "Sand";
         String firstName = "Bhanu vikas";
         String email = "yagantibhanuvikas@gmail.com";
-        String udf1 = "";
-        String udf2 = "";
+        String udf1 = details.destination.replaceAll("[^a-zA-Z]", "");
+        String udf2 = details.origin.replaceAll("[^a-zA-Z]", "");
         String udf3 = "";
-        String udf4 = "";
-        String udf5 = "";
-
+        String udf4 = details.zoneName;
+        String udf5 = details.distance;
 
 
 
@@ -333,6 +354,7 @@ public class BookingConfirmationActivity extends AppCompatActivity {
              }
          }
 
+
          /*@Override
          protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
              if (requestCode == PayuConstants.PAYU_REQUEST_CODE) {
@@ -363,6 +385,172 @@ public class BookingConfirmationActivity extends AppCompatActivity {
 
 
      }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result Code is -1 send from Payumoney activity
+        Log.d("onActivityResult", "request code " + requestCode + " resultcode " + resultCode);
+        if (requestCode == PayUmoneyFlowManager.REQUEST_CODE_PAYMENT && resultCode == RESULT_OK && data != null) {
+            TransactionResponse transactionResponse = data.getParcelableExtra( PayUmoneyFlowManager.INTENT_EXTRA_TRANSACTION_RESPONSE );
+
+            ResultModel resultModel = data.getParcelableExtra(PayUmoneyFlowManager.ARG_RESULT);
+
+
+            if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
+
+                if(transactionResponse.getTransactionStatus().equals( TransactionResponse.TransactionStatus.SUCCESSFUL )){
+                    //Successfull Transaction
+                    Toast.makeText(BookingConfirmationActivity.this, "Payment Successfull!!!",
+                            Toast.LENGTH_LONG).show();
+                } else{
+                    //Failure Transaction
+                    Toast.makeText(BookingConfirmationActivity.this, "Payment Failure!!!",
+                            Toast.LENGTH_LONG).show();
+                }
+
+                // Response from Payumoney
+                String payuResponse = transactionResponse.getPayuResponse();
+                try {
+                    JSONObject response = new JSONObject(payuResponse);
+                    JSONObject result = response.getJSONObject("result");
+                    String name = result.getString("firstname");
+                    String phone = result.getString("phone");
+                    String quantity = result.getString("amount");    //
+                    String destination = result.getString("udf1"); //
+                    String origin = result.getString("udf2");      //
+                    String route = origin + " to " + destination;       //
+                    String distance = result.getString("udf5");   //
+                    String amount = result.getString("amount");
+                    String ip_addr = "192.16.123.123";
+                    String zone = result.getString("udf4");    //
+                    String request_status = "1";
+                    String current_status;
+                    if(result.getString("status").equals("success")) {
+                        current_status = "1";
+                    } else current_status = "0";
+
+                    BookingConfirmationActivity.WriteDetailsForSandBooking writeDetailsForSandBooking = new BookingConfirmationActivity.WriteDetailsForSandBooking();
+                    writeDetailsForSandBooking.execute(name, phone, quantity, destination, route,  distance, origin, amount, ip_addr, zone, current_status, request_status );
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.e("PayUResponse: ", payuResponse);
+                // Response from SURl and FURL
+                String merchantResponse = transactionResponse.getTransactionDetails();
+                Log.e("TransationDetails", merchantResponse+"");
+            }  else if (resultModel != null && resultModel.getError() != null) {
+                Log.e("Error response : " ,  resultModel.getError().getTransactionResponse().toString());
+            } else {
+                Log.e("Both objects are null!", " ");
+            }
+        }
+    }
+
+
+    private class WriteDetailsForSandBooking extends AsyncTask<String, String, String> {
+
+        private ProgressDialog progressDialog;
+
+
+        @Override
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(BookingConfirmationActivity.this);
+            progressDialog.setMessage("Please wait...");
+            progressDialog.show();
+            Log.e("InpreExecute", "nothing");
+
+        }
+
+        @Override
+        protected String doInBackground(String... postParams) {
+            String name = postParams[0];
+            String phone_no = postParams[1];
+            String quantity = postParams[2];
+            String destination = postParams[3];
+            String route = postParams[4];
+            String distance = postParams[5];
+            String origin = postParams[6];
+            String amount = postParams[7];
+            String ip_addr = postParams[8];
+            String zone = postParams[9];
+            String current_status = postParams[10];
+            String request_status = postParams[11];
+
+
+            String data = null;
+            try {
+                data = URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(name, "UTF-8") + "&" +
+                        URLEncoder.encode("phone_no", "UTF-8") + "=" + URLEncoder.encode(phone_no, "UTF-8") + "&" +
+                        URLEncoder.encode("quantity", "UTF-8") + "=" + URLEncoder.encode(quantity, "UTF-8") + "&" +
+                        URLEncoder.encode("destination", "UTF-8") + "=" + URLEncoder.encode(destination, "UTF-8") + "&" +
+                        URLEncoder.encode("route", "UTF-8") + "=" + URLEncoder.encode(route, "UTF-8") + "&" +
+                        URLEncoder.encode("distance", "UTF-8") + "=" + URLEncoder.encode(distance, "UTF-8") + "&" +
+                        URLEncoder.encode("origin", "UTF-8") + "=" + URLEncoder.encode(origin, "UTF-8") + "&" +
+                        URLEncoder.encode("amount", "UTF-8") + "=" + URLEncoder.encode(amount, "UTF-8") + "&" +
+                        URLEncoder.encode("ip_addr", "UTF-8") + "=" + URLEncoder.encode(ip_addr, "UTF-8") + "&" +
+                        URLEncoder.encode("zone", "UTF-8") + "=" + URLEncoder.encode(zone, "UTF-8") + "&" +
+                        URLEncoder.encode("current_status", "UTF-8") + "=" + URLEncoder.encode(current_status, "UTF-8") + "&" +
+                        URLEncoder.encode("request_status", "UTF-8") + "=" + URLEncoder.encode(request_status, "UTF-8");
+
+                URL writeURL = new URL("http://192.168.43.218/portinfo/writeDetailsForSandBooking.php");
+                HttpURLConnection urlConnection = (HttpURLConnection) writeURL.openConnection();
+                Log.e("IndoInBackgroundTask", "after opening connection");
+                urlConnection.setDoOutput(true);
+                urlConnection.setRequestMethod("POST");
+                Log.e("IndoInBackgroundTask", "before opening stream");
+                OutputStream os = urlConnection.getOutputStream();
+                Log.e("current background: ", "Output stream opeded");
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                bw.write(data);
+                bw.flush();
+                bw.close();
+
+                Log.e("inDoINBackGround:", "started reading response");
+                InputStream is = urlConnection.getInputStream();
+                Log.e("inDoINBackground", "got input stream");
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                Log.e("inDoInBackground", "created br");
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+                while ((line = br.readLine())!=null) {
+                    Log.e("indoinbackground", "in while");
+                    sb.append(line);
+                }
+
+                Log.e("inDoinbackaoid", "out while");
+                Log.e("doInBackgroundResponse", sb.toString());
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+
+            super.onPostExecute(response);
+            super.onPostExecute(response);
+            progressDialog.dismiss();
+            Log.e("InpostExecute response:", response);
+
+        }
+    }
+
+
+
 
 
 

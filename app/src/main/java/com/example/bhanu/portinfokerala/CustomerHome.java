@@ -41,7 +41,8 @@ public class CustomerHome extends AppCompatActivity {
         booking_history_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent toBookingHistory = new Intent(CustomerHome.this, BookingHistory.class);
+                startActivity(toBookingHistory);
             }
         });
 

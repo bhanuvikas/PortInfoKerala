@@ -64,6 +64,16 @@
     <string name="origin_confirmation">Origin: </string>
     <string name="distance_confirmation">Distance:</string>
     <string name="pay_offline">Pay Offline</string>
+    <string name="key">Key</string>
+    <string name="value">Value</string>
+    <string name="booking_id">Booking ID</string>
+    <string name="port">Port</string>
+    <string name="zone">Zone</string>
+    <string name="quantity_booked">Quantity Booked</string>
+    <string name="time_of_booking">Time of Booking</string>
+    <string name="status">Booking Status</string>
+    <string name="booking_process">Booking Process</string>
+    <string name="ok">OK</string>
 
 
 </resources>
