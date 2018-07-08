@@ -42,7 +42,7 @@ public class CustomAdapterForPadding extends BaseAdapter{
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         view = inflter.inflate(R.layout.custom_spinner_items_for_padding, null);
-        TextView port_name = (TextView) view.findViewById(R.id.portName);
+        TextView port_name = view.findViewById(R.id.portName);
         port_name.setText(ports1[i]);
         return view;
     }

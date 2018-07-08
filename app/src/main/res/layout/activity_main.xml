@@ -5,233 +5,252 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="16dp"
-    android:background="#fef6af"
     android:gravity="center_vertical"
     tools:context=".MainActivity"
     android:fillViewport="true"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ViewSwitcher
 
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/view_switcher">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <include layout="@layout/app_bar"/>
 
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:padding="16dp"
-            android:background="#fef6af"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:weightSum="1">
+            android:background="#fef6af">
 
-            <LinearLayout
+
+            <ViewSwitcher
+
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:layout_weight="0.2"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:id="@+id/view_switcher">
 
-                <ImageView
+                <LinearLayout
+                    android:id="@+id/phone_no_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/portinfo_logo"
-                    android:layout_marginBottom="24dp"/>
-            </LinearLayout>
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:background="#fef6af"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:weightSum="1">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/lightBrown"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:layout_weight="0.5"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Member Login"
-                    android:gravity="center_horizontal"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp">
-                </TextView>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:paddingLeft="24dp"
-                    android:paddingRight="24dp">
-
-                    <android.support.design.widget.TextInputEditText
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/phone_number"
-                        android:inputType="phone"
-                        android:id="@+id/phone_no_et"/>
-                </android.support.design.widget.TextInputLayout>
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:layout_weight="0.2"
+                        android:orientation="vertical">
 
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/portinfo_logo"
+                            android:layout_marginBottom="24dp"/>
+                    </LinearLayout>
 
-                <Button
-                    android:id="@+id/request_otp_btn"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@color/skyBlue"
-                    android:text="@string/request_otp"
-                    android:layout_marginBottom="16dp"/>
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/lightBrown"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:layout_weight="0.3"
-                android:orientation="vertical">
-
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@color/red"
-                    android:text="@string/new_customer_registration"
-                    android:layout_marginBottom="16dp"
-                    android:id="@+id/reg_btn2"/>
-
-                <Button
-                    android:id="@+id/spot_booking_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@color/red"
-                    android:text="@string/spot_booking" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-
-        <LinearLayout
-
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="16dp"
-            android:background="#fef6af"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:weightSum="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:layout_weight="0.2"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/portinfo_logo"
-                    android:layout_marginBottom="24dp"/>
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/lightBrown"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:layout_weight="0.5"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Member Login"
-                    android:gravity="center_horizontal"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp">
-                </TextView>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:paddingRight="24dp"
-                    android:paddingLeft="24dp">
-
-                    <android.support.design.widget.TextInputEditText
+                    <View
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/otp"
-                        android:inputType="number"
-                        android:id="@+id/otp_et"/>
-                </android.support.design.widget.TextInputLayout>
+                        android:layout_height="2dp"
+                        android:background="@color/lightBrown"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:layout_weight="0.5"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Member Login"
+                            android:gravity="center_horizontal"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="16dp">
+                        </TextView>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:paddingLeft="24dp"
+                            android:paddingRight="24dp">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:ems="10"
+                                android:hint="@string/phone_number"
+                                android:inputType="phone"
+                                android:id="@+id/phone_no_et"/>
+                        </android.support.design.widget.TextInputLayout>
 
 
-                <Button
-                    android:id="@+id/login_btn"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@color/skyBlue"
-                    android:text="@string/login"
-                    android:layout_marginBottom="16dp"/>
-            </LinearLayout>
+                        <Button
+                            android:id="@+id/request_otp_btn"
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/button_bg"
+                            android:text="@string/request_otp"
+                            android:layout_marginBottom="16dp"/>
+                    </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/lightBrown"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/lightBrown"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:layout_weight="0.3"
-                android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:layout_weight="0.3"
+                        android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/reg_btn"
+                        <Button
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/button_red_bg"
+                            android:text="@string/new_customer_registration"
+                            android:layout_marginBottom="16dp"
+                            android:id="@+id/reg_btn2"/>
+
+                        <Button
+                            android:id="@+id/spot_booking_btn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/button_red_bg"
+                            android:text="@string/spot_booking" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/otp_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@color/red"
-                    android:text="@string/new_customer_registration"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:background="#fef6af"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:weightSum="1">
 
-                <Button
-                    android:id="@+id/spot_booking_btn2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@color/red"
-                    android:text="@string/spot_booking" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:layout_weight="0.2"
+                        android:orientation="vertical">
 
-            </LinearLayout>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/portinfo_logo"
+                            android:layout_marginBottom="24dp"/>
+                    </LinearLayout>
 
-        </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/lightBrown"/>
 
-    </ViewSwitcher>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:layout_weight="0.5"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Member Login"
+                            android:gravity="center_horizontal"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="16dp">
+                        </TextView>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:paddingRight="24dp"
+                            android:paddingLeft="24dp">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:ems="10"
+                                android:hint="@string/otp"
+                                android:inputType="number"
+                                android:id="@+id/otp_et"/>
+                        </android.support.design.widget.TextInputLayout>
+
+
+                        <Button
+                            android:id="@+id/login_btn"
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/button_bg"
+                            android:text="@string/login"
+                            android:layout_marginBottom="16dp"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/lightBrown"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:layout_weight="0.3"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/reg_btn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/button_red_bg"
+                            android:text="@string/new_customer_registration"
+                            android:layout_marginBottom="16dp"/>
+
+                        <Button
+                            android:id="@+id/spot_booking_btn2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/button_red_bg"
+                            android:text="@string/spot_booking" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </ViewSwitcher>
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 
 </ScrollView>

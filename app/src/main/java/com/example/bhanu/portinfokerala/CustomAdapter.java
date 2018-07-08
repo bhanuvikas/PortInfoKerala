@@ -50,8 +50,8 @@ public class CustomAdapter extends BaseAdapter{
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         view = inflter.inflate(R.layout.custom_spinner_items, null);
-        TextView port_name = (TextView) view.findViewById(R.id.portName);
-        TextView balance = (TextView) view.findViewById(R.id.balance);
+        TextView port_name = view.findViewById(R.id.portName);
+        TextView balance = view.findViewById(R.id.balance);
         port_name.setText(ports1[i]);
         balance.setText(String.valueOf(balances1[i]));
         if(color_code1[i]==0) {

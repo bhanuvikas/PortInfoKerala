@@ -23,7 +23,9 @@
         android:supportsRtl="true"
         android:theme="@style/CustomAppTheme"
         tools:replace="android:allowBackup">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,9 +55,13 @@
             android:name="io.fabric.ApiKey"
             android:value="74c670e7e065abe9e11e94609d888dc907b1d751" />
 
-        <activity android:name=".SpotBooking" />
+        <activity
+            android:name=".SpotBooking"
+            android:windowSoftInputMode="stateHidden" />
         <activity android:name=".SpotBookingConfirmation" />
-        <activity android:name=".BookingHistory"></activity>
+        <activity android:name=".BookingHistory" />
+        <activity android:name=".CompletePayment" />
+        <activity android:name=".BookingStatus"></activity>
     </application>
 
 </manifest>

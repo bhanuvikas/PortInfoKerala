@@ -11,7 +11,11 @@ import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -102,15 +106,20 @@ public class SpotBooking extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
         setContentView(R.layout.activity_spot_booking);
 
-        destination_tv = (TextView) findViewById(R.id.destination_tv);
-        origin_tv = (TextView) findViewById(R.id.origin_tv);
-        distance_tv = (TextView) findViewById(R.id.distance_tv);
-        time_tv = (TextView) findViewById(R.id.time_tv);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Spot Booking");
+        setSupportActionBar(toolbar);
+
+        destination_tv = findViewById(R.id.destination_tv);
+        origin_tv = findViewById(R.id.origin_tv);
+        distance_tv = findViewById(R.id.distance_tv);
+        time_tv = findViewById(R.id.time_tv);
         method = "getPorts";
-        portNamesSpinner = (Spinner) findViewById(R.id.port_name_spinner);
-        zoneNamesSpinner = (Spinner) findViewById(R.id.zone_name_spinner);
+        portNamesSpinner = findViewById(R.id.port_name_spinner);
+        zoneNamesSpinner = findViewById(R.id.zone_name_spinner);
         GetPortsBackgroundTask getPortsBackgroundTask = new GetPortsBackgroundTask();
         getPortsBackgroundTask.execute(method);
 
@@ -118,14 +127,14 @@ public class SpotBooking extends AppCompatActivity {
 
 
         //Quantity Spinner
-        final Spinner quantitySpinner = (Spinner) findViewById(R.id.quantity_spinner);
+        final Spinner quantitySpinner = findViewById(R.id.quantity_spinner);
         ArrayAdapter<CharSequence> quantityAdapter = ArrayAdapter.createFromResource(this, R.array.quantity, android.R.layout.simple_spinner_item);
         quantityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         quantitySpinner.setAdapter(quantityAdapter);
 
 
         //Destination Selector
-        Button destination_btn = (Button) findViewById(R.id.destination_btn);
+        Button destination_btn = findViewById(R.id.destination_btn);
         destination_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,7 +151,7 @@ public class SpotBooking extends AppCompatActivity {
         });
 
         //Origin Selector
-        Button origin_btn = (Button) findViewById(R.id.origin_btn);
+        Button origin_btn = findViewById(R.id.origin_btn);
         origin_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,7 +168,7 @@ public class SpotBooking extends AppCompatActivity {
         });
 
         //Distance button
-        Button distance_btn = (Button) findViewById(R.id.distance_btn);
+        Button distance_btn = findViewById(R.id.distance_btn);
         distance_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,7 +197,7 @@ public class SpotBooking extends AppCompatActivity {
 
 
         //Confirm Booking Btn
-        Button confirm_booking_btn = (Button)findViewById(R.id.confirm_booking_btn);
+        Button confirm_booking_btn = findViewById(R.id.confirm_booking_btn);
         confirm_booking_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,13 +210,13 @@ public class SpotBooking extends AppCompatActivity {
                 aadhar_no = aadhar_tv.getText().toString();
                 phone_number = phone_tv.getText().toString();
 
-                Spinner port_name_spinner = (Spinner)findViewById(R.id.port_name_spinner);
+                Spinner port_name_spinner = findViewById(R.id.port_name_spinner);
                 port_name = selectedPort;
 
-                Spinner zone_name_spinner = (Spinner)findViewById(R.id.zone_name_spinner);
+                Spinner zone_name_spinner = findViewById(R.id.zone_name_spinner);
                 zone_name = selectedZone;
 
-                Spinner quantity_spinner = (Spinner)findViewById(R.id.quantity_spinner);
+                Spinner quantity_spinner = findViewById(R.id.quantity_spinner);
                 quantity = quantity_spinner.getSelectedItem().toString();
 
                 if(phone_number.length() != 10) {
@@ -261,6 +270,21 @@ public class SpotBooking extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+
+        return true;
+    }
+
+
     AlertDialog mMyDialog;
     public void show_alert(String type, String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -286,9 +310,9 @@ public class SpotBooking extends AppCompatActivity {
         mMyDialog = builder.show(); // assign AlertDialog
     }
 
+
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-
 
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
@@ -304,7 +328,6 @@ public class SpotBooking extends AppCompatActivity {
 
                 destinationDetails = destination.getName().toString();
                 //.toString() + ", " + destination.getAddress();
-
                 flag1 = true;
                 if(flag2) {
                     float distanceTemp = destinationLoc.distanceTo(originLoc);

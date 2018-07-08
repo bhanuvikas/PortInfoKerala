@@ -9,7 +9,11 @@ import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,6 +66,10 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking_confirmation);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Booking Confirmation");
+        setSupportActionBar(toolbar);
+
         SharedPreferences prefs = getSharedPreferences("portinfo", MODE_PRIVATE);
         phone_no = prefs.getString("phone_number", "UNKNOWN");
 
@@ -70,13 +78,13 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         Intent fromSandBooking = getIntent();
         details = (BookingDetails) fromSandBooking.getSerializableExtra("booking_details");
 
-        TextView port_confirmation_tv = (TextView) findViewById(R.id.port_name_confirmation);
-        TextView zone_confirmation_tv = (TextView) findViewById(R.id.zone_name_confirmation);
-        TextView quantity_confirmation_tv = (TextView) findViewById(R.id.quantity_confirmation);
-        TextView origin_confirmation = (TextView) findViewById(R.id.origin_confirmation);
-        TextView destination_confirmation = (TextView) findViewById(R.id.destination_confirmation);
-        TextView distane_confirmation = (TextView) findViewById(R.id.distance_confirmation);
-        TextView time_confirmation = (TextView) findViewById(R.id.time_confirmation);
+        TextView port_confirmation_tv = findViewById(R.id.port_name_confirmation);
+        TextView zone_confirmation_tv = findViewById(R.id.zone_name_confirmation);
+        TextView quantity_confirmation_tv = findViewById(R.id.quantity_confirmation);
+        TextView origin_confirmation = findViewById(R.id.origin_confirmation);
+        TextView destination_confirmation = findViewById(R.id.destination_confirmation);
+        TextView distane_confirmation = findViewById(R.id.distance_confirmation);
+        TextView time_confirmation = findViewById(R.id.time_confirmation);
 
 
         port_confirmation_tv.setText(details.portName);
@@ -91,8 +99,8 @@ public class BookingConfirmationActivity extends AppCompatActivity {
 
 
         //confirming booking details and so displaying payment options
-        final LinearLayout ll = (LinearLayout) findViewById(R.id.invisible_ll);
-        final Button confirm_booking_btn = (Button)findViewById(R.id.final_booking_confirm_btn);
+        final LinearLayout ll = findViewById(R.id.invisible_ll);
+        final Button confirm_booking_btn = findViewById(R.id.final_booking_confirm_btn);
         confirm_booking_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,10 +111,10 @@ public class BookingConfirmationActivity extends AppCompatActivity {
 
 
         //proceeding after displaying payment options
-        Button final_proceed_btn = (Button)findViewById(R.id.final_proceed_btn);
-        RadioGroup payment_decision_radio = (RadioGroup) findViewById(R.id.payment_decision_radio);
-        final RadioButton proceed_to_payment = (RadioButton) findViewById(R.id.proceed_to_payment);
-        final RadioButton pay_later = (RadioButton) findViewById(R.id.pay_later);
+        Button final_proceed_btn = findViewById(R.id.final_proceed_btn);
+        RadioGroup payment_decision_radio = findViewById(R.id.payment_decision_radio);
+        final RadioButton proceed_to_payment = findViewById(R.id.proceed_to_payment);
+        final RadioButton pay_later = findViewById(R.id.pay_later);
 
         final_proceed_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,8 +136,15 @@ public class BookingConfirmationActivity extends AppCompatActivity {
                             .setMessage("You have booked sand successfully and you can pay later through complete payment option in your dashboard")
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Intent toCustomerHome = new Intent(BookingConfirmationActivity.this, CustomerHome.class);
-                                    startActivity(toCustomerHome);
+
+                                    String name = "";
+                                    String route = details.origin + " to " + details.destination;
+                                    String ip_addr = "192.16.123.123";
+                                    String request_status = "0";
+                                    String current_status = "0";
+                                    WriteDetailsForSandBooking writeDetailsForSandBooking = new WriteDetailsForSandBooking();
+                                    writeDetailsForSandBooking.execute(name, phone_no, details.quantity, details.destination, route, details.distance, details.origin, details.quantity, ip_addr, details.zoneName, current_status, request_status);
+
                                 }
                             })
                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -141,13 +156,6 @@ public class BookingConfirmationActivity extends AppCompatActivity {
                             .show();
 
 
-                    String name = "";
-                    String route = details.origin + " to " + details.destination;
-                    String ip_addr = "192.16.123.123";
-                    String request_status = "0";
-                    String current_status = "0";
-                    WriteDetailsForSandBooking writeDetailsForSandBooking = new WriteDetailsForSandBooking();
-                    writeDetailsForSandBooking.execute(name, phone_no, details.quantity, details.destination, route, details.distance, details.origin, details.quantity, ip_addr, details.zoneName, current_status, request_status);
 
 
                 }
@@ -159,6 +167,26 @@ public class BookingConfirmationActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()){
+
+            case R.id.menuLogout:
+                Toast.makeText(this, "You clicked logout", Toast.LENGTH_SHORT).show();
+                break;
+
+        }
+        return true;
     }
 
     /**
@@ -542,10 +570,13 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         protected void onPostExecute(String response) {
 
             super.onPostExecute(response);
-            super.onPostExecute(response);
             progressDialog.dismiss();
             Log.e("InpostExecute response:", response);
 
+            Intent toCustomerHome = new Intent(BookingConfirmationActivity.this, CustomerHome.class);
+            toCustomerHome.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            toCustomerHome.putExtra("back from booking", true);
+            startActivity(toCustomerHome);
         }
     }
 

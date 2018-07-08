@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/dimen_8dp"
             android:gravity="center"
-            android:text="@string/booking_history"
+            android:text="@string/booking_status"
             android:textColor="@color/lightBrown"
             android:textSize="24sp"
             android:textStyle="bold" />

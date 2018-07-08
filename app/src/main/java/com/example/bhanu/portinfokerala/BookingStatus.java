@@ -1,13 +1,11 @@
 package com.example.bhanu.portinfokerala;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -33,9 +30,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
 
-public class BookingHistory extends AppCompatActivity {
+public class BookingStatus extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
@@ -44,15 +40,16 @@ public class BookingHistory extends AppCompatActivity {
     ArrayList<DialogFragmentDetails> dfDetails = new ArrayList<>();
     ArrayList<BookingDetailsCard> bdcDetails = new ArrayList<>();
 
-    BookingDetailsAdapter bookingDetailsAdapter;
+    BookingStatusAdapter bookingStatusAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_booking_history);
+        setContentView(R.layout.activity_booking_status);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Booking History");
+        toolbar.setTitle("Booking Status");
         setSupportActionBar(toolbar);
 
         SharedPreferences prefs = getSharedPreferences("portinfo", MODE_PRIVATE);
@@ -63,13 +60,13 @@ public class BookingHistory extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 
-        method = "getBookingHistoryDetails";
+        method = "getBookingStatusDetails";
 
-        FetchBookingHistoryDetails fetchBookingHistoryDetails = new FetchBookingHistoryDetails();
-        fetchBookingHistoryDetails.execute(method);
+        FetchBookingStatusDetails fetchBookingStatusDetails = new FetchBookingStatusDetails();
+        fetchBookingStatusDetails.execute(method);
 
         //setting adapter to recyclerview
-        recyclerView.setAdapter(bookingDetailsAdapter);
+        recyclerView.setAdapter(bookingStatusAdapter);
 
     }
 
@@ -92,10 +89,10 @@ public class BookingHistory extends AppCompatActivity {
                 editor.clear();
                 editor.apply();
 
-                Intent intent = new Intent(BookingHistory.this, MainActivity.class);
+                Intent intent = new Intent(BookingStatus.this, MainActivity.class);
                 startActivity(intent);
 
-                Toast.makeText(BookingHistory.this, "Successfully Logged Out!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BookingStatus.this, "Successfully Logged Out!!", Toast.LENGTH_SHORT).show();
 
 
                 break;
@@ -105,7 +102,7 @@ public class BookingHistory extends AppCompatActivity {
     }
 
 
-    public class FetchBookingHistoryDetails extends AsyncTask<String, String, String> {
+    public class FetchBookingStatusDetails extends AsyncTask<String, String, String> {
 
         private ProgressDialog progressDialog;
 
@@ -113,7 +110,7 @@ public class BookingHistory extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(BookingHistory.this);
+            progressDialog = new ProgressDialog(BookingStatus.this);
             progressDialog.setMessage("Please wait...");
             progressDialog.show();
             Log.e("InpreExecute", "nothing");
@@ -129,7 +126,7 @@ public class BookingHistory extends AppCompatActivity {
             String historyURL = "http://192.168.43.218/portinfo/getBookingHistoryDetails.php";
             Log.e("IndoInBackgroundTask", "outside");
             Log.e("IndoInBackgroundTask", method);
-            if(method.equals("getBookingHistoryDetails")) {
+            if(method.equals("getBookingStatusDetails")) {
 
                 try {
                     URL url = new URL(historyURL);
@@ -216,14 +213,27 @@ public class BookingHistory extends AppCompatActivity {
                     cnt++;
                 }
 
+                if(bdcDetails.size()>1) {
+                    int i;
+                    for(i=bdcDetails.size()-2;i>=0;i--) {
+                        bdcDetails.remove(i);
+                        dfDetails.remove(i);
+                    }
+                }
+
+                bdcDetails.get(0).index = 0;
+                dfDetails.get(0).index = 0;
+
+
                 Log.e("bdcDetails", String.valueOf(bdcDetails.size()));
 
-                recyclerView.setAdapter(new BookingDetailsAdapter(bdcDetails, new BookingDetailsAdapter.OnItemClickListener() {
+                recyclerView.setAdapter(new BookingStatusAdapter(bdcDetails, new BookingStatusAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(BookingDetailsCard item) {
 
                         int index;
                         index = item.index;
+                        Log.e("index", String.valueOf(index));
                         String booking_id = item.booking_id;
                         String port_name = dfDetails.get(index).port_name;
                         String zone_name = dfDetails.get(index).zone_name;
@@ -234,7 +244,7 @@ public class BookingHistory extends AppCompatActivity {
                         String request_status = dfDetails.get(index).request_status;
                         String current_status = dfDetails.get(index).current_status;
 
-                        BookingHistoryDialog bookingHistoryDialog = new BookingHistoryDialog();
+                        BookingStatusDialog bookingStatusDialog = new BookingStatusDialog();
 
                         Bundle data = new Bundle();//Use bundle to pass data
                         data.putString("id", booking_id);//put string, int, etc in bundle with a key value
@@ -247,9 +257,9 @@ public class BookingHistory extends AppCompatActivity {
                         data.putString("request_status", request_status);
                         data.putString("current_status", current_status);
 
-                        bookingHistoryDialog.setArguments(data);//Finally set argument bundle to fragment
+                        bookingStatusDialog.setArguments(data);//Finally set argument bundle to fragment
 
-                        bookingHistoryDialog.show(getFragmentManager(), "BookingHistoryDialog");
+                        bookingStatusDialog.show(getFragmentManager(), "BookingStatusDialog");
 
                     }
                 }));
@@ -264,5 +274,6 @@ public class BookingHistory extends AppCompatActivity {
         }
 
     }
+
 
 }

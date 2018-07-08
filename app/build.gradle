@@ -51,10 +51,10 @@ dependencies {
     implementation 'com.payumoney.sdkui:plug-n-play:1.4.0'
 
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
-        transitive = true;
+        transitive = true
     }
     implementation('com.crashlytics.sdk.android:crashlytics-ndk:2.0.4@aar') {
-        transitive = true;
+        transitive = true
     }
 
     implementation 'com.google.android.gms:play-services-maps:11.0.4'

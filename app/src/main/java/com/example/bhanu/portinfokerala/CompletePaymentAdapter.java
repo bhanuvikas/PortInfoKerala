@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class BookingDetailsAdapter extends RecyclerView.Adapter<BookingDetailsAdapter.BookingDetailsHolder>{
+public class CompletePaymentAdapter extends RecyclerView.Adapter<CompletePaymentAdapter.CompletePaymentHolder>{
 
     public interface OnItemClickListener {
 
@@ -25,21 +25,21 @@ public class BookingDetailsAdapter extends RecyclerView.Adapter<BookingDetailsAd
     private final OnItemClickListener listener;
 
 
-    public BookingDetailsAdapter(List<BookingDetailsCard> bookingDetailsList, OnItemClickListener listener) {
+    public CompletePaymentAdapter(List<BookingDetailsCard> bookingDetailsList, OnItemClickListener listener) {
 
         this.bookingDetailsCardList = bookingDetailsList;
         this.listener = listener;
     }
 
     @Override
-    public BookingDetailsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CompletePaymentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.booking_details_card, parent, false);
-        return new BookingDetailsHolder(v);
+        return new CompletePaymentHolder(v);
 
     }
 
     @Override
-    public void onBindViewHolder(BookingDetailsHolder holder, int position) {
+    public void onBindViewHolder(CompletePaymentHolder holder, int position) {
         BookingDetailsCard item = bookingDetailsCardList.get(position);
 
         holder.bind(bookingDetailsCardList.get(position), listener);
@@ -53,12 +53,12 @@ public class BookingDetailsAdapter extends RecyclerView.Adapter<BookingDetailsAd
 
 
 
-    static class BookingDetailsHolder extends RecyclerView.ViewHolder {
+    static class CompletePaymentHolder extends RecyclerView.ViewHolder {
 
         TextView booking_id_tv, booking_date_tv, booking_quantity_tv, booking_request_method_tv;
         CardView cardView;
 
-        public BookingDetailsHolder(View itemView) {
+        public CompletePaymentHolder(View itemView) {
             super(itemView);
 
             booking_id_tv = itemView.findViewById(R.id.booking_id);

@@ -1,13 +1,11 @@
 package com.example.bhanu.portinfokerala;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,8 +13,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
+
+import com.payumoney.core.entity.TransactionResponse;
+import com.payumoney.sdkui.ui.utils.PayUmoneyFlowManager;
+import com.payumoney.sdkui.ui.utils.ResultModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,26 +34,27 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
 
-public class BookingHistory extends AppCompatActivity {
+public class CompletePayment extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
     String phone_no, method;
+    String booking_id;
 
     ArrayList<DialogFragmentDetails> dfDetails = new ArrayList<>();
     ArrayList<BookingDetailsCard> bdcDetails = new ArrayList<>();
 
-    BookingDetailsAdapter bookingDetailsAdapter;
+    CompletePaymentAdapter completePaymentAdapter;
+    String merchantResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_booking_history);
+        setContentView(R.layout.activity_complete_payment);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Booking History");
+        toolbar.setTitle("Complete Payment");
         setSupportActionBar(toolbar);
 
         SharedPreferences prefs = getSharedPreferences("portinfo", MODE_PRIVATE);
@@ -62,14 +64,14 @@ public class BookingHistory extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        method = "getCompletePaymentDetails";
 
-        method = "getBookingHistoryDetails";
-
-        FetchBookingHistoryDetails fetchBookingHistoryDetails = new FetchBookingHistoryDetails();
-        fetchBookingHistoryDetails.execute(method);
+        FetchCompletePaymentDetails fetchCompletePaymentDetails = new FetchCompletePaymentDetails();
+        fetchCompletePaymentDetails.execute(method);
 
         //setting adapter to recyclerview
-        recyclerView.setAdapter(bookingDetailsAdapter);
+        recyclerView.setAdapter(completePaymentAdapter);
+
 
     }
 
@@ -92,10 +94,10 @@ public class BookingHistory extends AppCompatActivity {
                 editor.clear();
                 editor.apply();
 
-                Intent intent = new Intent(BookingHistory.this, MainActivity.class);
+                Intent intent = new Intent(CompletePayment.this, MainActivity.class);
                 startActivity(intent);
 
-                Toast.makeText(BookingHistory.this, "Successfully Logged Out!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CompletePayment.this, "Successfully Logged Out!!", Toast.LENGTH_SHORT).show();
 
 
                 break;
@@ -105,7 +107,7 @@ public class BookingHistory extends AppCompatActivity {
     }
 
 
-    public class FetchBookingHistoryDetails extends AsyncTask<String, String, String> {
+    public class FetchCompletePaymentDetails extends AsyncTask<String, String, String> {
 
         private ProgressDialog progressDialog;
 
@@ -113,7 +115,7 @@ public class BookingHistory extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(BookingHistory.this);
+            progressDialog = new ProgressDialog(CompletePayment.this);
             progressDialog.setMessage("Please wait...");
             progressDialog.show();
             Log.e("InpreExecute", "nothing");
@@ -126,13 +128,13 @@ public class BookingHistory extends AppCompatActivity {
         protected String doInBackground(String... params) {
 
             String method = params[0];
-            String historyURL = "http://192.168.43.218/portinfo/getBookingHistoryDetails.php";
+            String completePaymentURL = "http://192.168.43.218/portinfo/getCompletePaymentDetails.php";
             Log.e("IndoInBackgroundTask", "outside");
             Log.e("IndoInBackgroundTask", method);
-            if(method.equals("getBookingHistoryDetails")) {
+            if(method.equals("getCompletePaymentDetails")) {
 
                 try {
-                    URL url = new URL(historyURL);
+                    URL url = new URL(completePaymentURL);
                     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     Log.e("IndoInBackgroundTask", "after opening connection");
                     urlConnection.setDoOutput(true);
@@ -218,12 +220,13 @@ public class BookingHistory extends AppCompatActivity {
 
                 Log.e("bdcDetails", String.valueOf(bdcDetails.size()));
 
-                recyclerView.setAdapter(new BookingDetailsAdapter(bdcDetails, new BookingDetailsAdapter.OnItemClickListener() {
+                recyclerView.setAdapter(new CompletePaymentAdapter(bdcDetails, new CompletePaymentAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(BookingDetailsCard item) {
 
                         int index;
                         index = item.index;
+                        booking_id = item.booking_id;
                         String booking_id = item.booking_id;
                         String port_name = dfDetails.get(index).port_name;
                         String zone_name = dfDetails.get(index).zone_name;
@@ -234,7 +237,7 @@ public class BookingHistory extends AppCompatActivity {
                         String request_status = dfDetails.get(index).request_status;
                         String current_status = dfDetails.get(index).current_status;
 
-                        BookingHistoryDialog bookingHistoryDialog = new BookingHistoryDialog();
+                        CompletePaymentDialog completePaymentDialog = new CompletePaymentDialog();
 
                         Bundle data = new Bundle();//Use bundle to pass data
                         data.putString("id", booking_id);//put string, int, etc in bundle with a key value
@@ -247,9 +250,9 @@ public class BookingHistory extends AppCompatActivity {
                         data.putString("request_status", request_status);
                         data.putString("current_status", current_status);
 
-                        bookingHistoryDialog.setArguments(data);//Finally set argument bundle to fragment
+                        completePaymentDialog.setArguments(data);//Finally set argument bundle to fragment
 
-                        bookingHistoryDialog.show(getFragmentManager(), "BookingHistoryDialog");
+                        completePaymentDialog.show(getFragmentManager(), "CompletePaymentDialog");
 
                     }
                 }));
@@ -263,6 +266,157 @@ public class BookingHistory extends AppCompatActivity {
 
         }
 
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.e("in onActivityResult", "of CompletePayment");
+
+        // Result Code is -1 send from Payumoney activity
+        Log.d("onActivityResult", "request code " + requestCode + " resultcode " + resultCode);
+        if (requestCode == PayUmoneyFlowManager.REQUEST_CODE_PAYMENT && resultCode == RESULT_OK && data != null) {
+            TransactionResponse transactionResponse = data.getParcelableExtra( PayUmoneyFlowManager.INTENT_EXTRA_TRANSACTION_RESPONSE );
+
+            ResultModel resultModel = data.getParcelableExtra(PayUmoneyFlowManager.ARG_RESULT);
+
+
+            if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
+
+                if(transactionResponse.getTransactionStatus().equals( TransactionResponse.TransactionStatus.SUCCESSFUL )){
+                    //Successfull Transaction
+                    Toast.makeText(CompletePayment.this, "Payment Successfull!!!",
+                            Toast.LENGTH_LONG).show();
+                } else{
+                    //Failure Transaction
+                    Toast.makeText(CompletePayment.this, "Payment Failure!!!",
+                            Toast.LENGTH_LONG).show();
+                }
+
+                // Response from Payumoney
+                String payuResponse = transactionResponse.getPayuResponse();
+
+                try {
+                    JSONObject response = new JSONObject(payuResponse);
+                    JSONObject result = response.getJSONObject("result");
+                    String name = result.getString("firstname");
+                    String aadhar = result.getString("udf3");      //
+                    String phone = result.getString("phone");
+                    String quantity = result.getString("amount");    //
+                    String destination = result.getString("udf1"); //
+                    String route = "Origin to Destination";       //
+                    String distance = result.getString("udf5");   //
+                    String origin = result.getString("udf2");      //
+                    String challan = "challan";
+                    String amount = result.getString("amount");
+                    String ip_addr = "192.16.123.123";
+                    String zone = result.getString("udf4");    //
+                    String status;
+                    if(result.getString("status").equals("success")) {
+                        status = "1";
+                    } else status = "2";
+
+
+
+                    UpdateCompletePayment updateCompletePayment = new UpdateCompletePayment();
+                    updateCompletePayment.execute(phone_no, booking_id);
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.e("PayUResponse: ", payuResponse);
+                // Response from SURl and FURL
+                merchantResponse = transactionResponse.getTransactionDetails();
+                Log.e("TransationDetails", merchantResponse);
+            }  else if (resultModel != null && resultModel.getError() != null) {
+                Log.e("Error response : " ,  resultModel.getError().getTransactionResponse().toString());
+            } else {
+                Log.e("Both objects are null!", " ");
+            }
+
+
+        }
+    }
+
+    private class UpdateCompletePayment extends AsyncTask<String, String, String> {
+
+        private ProgressDialog progressDialog;
+
+
+        @Override
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(CompletePayment.this);
+            progressDialog.setMessage("Please wait...");
+            progressDialog.show();
+            Log.e("InpreExecute", "nothing");
+
+        }
+
+        @Override
+        protected String doInBackground(String... postParams) {
+            String phone_no = postParams[0];
+            String booking_id = postParams[1];
+
+            String data = null;
+            try {
+                data = URLEncoder.encode("phone_no", "UTF-8") + "=" + URLEncoder.encode(phone_no, "UTF-8") + "&" +
+                        URLEncoder.encode("booking_id", "UTF-8") + "=" + URLEncoder.encode(booking_id, "UTF-8");
+
+                URL writeURL = new URL("http://192.168.43.218/portinfo/updateCompletePayment.php");
+                HttpURLConnection urlConnection = (HttpURLConnection) writeURL.openConnection();
+                Log.e("IndoInBackgroundTask", "after opening connection");
+                urlConnection.setDoOutput(true);
+                urlConnection.setRequestMethod("POST");
+                Log.e("IndoInBackgroundTask", "before opening stream");
+                OutputStream os = urlConnection.getOutputStream();
+                Log.e("current background: ", "Output stream opeded");
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                bw.write(data);
+                bw.flush();
+                bw.close();
+
+                Log.e("inDoINBackGround:", "started reading response");
+                InputStream is = urlConnection.getInputStream();
+                Log.e("inDoINBackground", "got input stream");
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                Log.e("inDoInBackground", "created br");
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+                while ((line = br.readLine())!=null) {
+                    Log.e("indoinbackground", "in while");
+                    sb.append(line);
+                }
+
+                Log.e("inDoinbackaoid", "out while");
+                Log.e("doInBackgroundResponse", sb.toString());
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+
+            super.onPostExecute(response);
+            progressDialog.dismiss();
+            Log.e("InpostExecute response:", response);
+
+            Intent toCustomerHome = new Intent(CompletePayment.this, CustomerHome.class);
+            toCustomerHome.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            toCustomerHome.putExtra("back from booking", true);
+            startActivity(toCustomerHome);
+
+        }
     }
 
 }

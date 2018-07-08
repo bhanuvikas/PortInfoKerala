@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BookingHistory"
+    tools:context=".CompletePayment"
     android:orientation="vertical">
 
     <include layout="@layout/app_bar"/>
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/dimen_8dp"
             android:gravity="center"
-            android:text="@string/booking_history"
+            android:text="@string/complete_payment"
             android:textColor="@color/lightBrown"
             android:textSize="24sp"
             android:textStyle="bold" />

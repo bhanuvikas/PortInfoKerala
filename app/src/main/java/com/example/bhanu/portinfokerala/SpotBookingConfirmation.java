@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -16,7 +17,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -62,27 +67,32 @@ public class SpotBookingConfirmation extends AppCompatActivity {
     String key = "vupGJOnU";
     String salt = "d3sTxYdWZn";
     SpotBookingDetails details;
+    String merchantResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spot_booking_confirmation);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Booking Confirmation");
+        setSupportActionBar(toolbar);
+
 
         Log.d("Entering Confirmation", "Entered");
         Intent fromSpotBooking = getIntent();
         details = (SpotBookingDetails) fromSpotBooking.getSerializableExtra("spot_booking_details");
 
-        TextView port_confirmation_tv = (TextView) findViewById(R.id.port_name_confirmation);
-        TextView zone_confirmation_tv = (TextView) findViewById(R.id.zone_name_confirmation);
-        TextView quantity_confirmation_tv = (TextView) findViewById(R.id.quantity_confirmation);
-        TextView origin_confirmation = (TextView) findViewById(R.id.origin_confirmation);
-        TextView destination_confirmation = (TextView) findViewById(R.id.destination_confirmation);
-        TextView distane_confirmation = (TextView) findViewById(R.id.distance_confirmation);
-        TextView time_confirmation = (TextView) findViewById(R.id.time_confirmation);
-        final TextView name_confirmation = (TextView) findViewById(R.id.spot_name_tv);
-        final TextView aadhar_confirmation = (TextView) findViewById(R.id.aadhar_no_tv);
-        final TextView phone_confirmation = (TextView) findViewById(R.id.phone_no_tv);
+        TextView port_confirmation_tv = findViewById(R.id.port_name_confirmation);
+        TextView zone_confirmation_tv = findViewById(R.id.zone_name_confirmation);
+        TextView quantity_confirmation_tv = findViewById(R.id.quantity_confirmation);
+        TextView origin_confirmation = findViewById(R.id.origin_confirmation);
+        TextView destination_confirmation = findViewById(R.id.destination_confirmation);
+        TextView distane_confirmation = findViewById(R.id.distance_confirmation);
+        TextView time_confirmation = findViewById(R.id.time_confirmation);
+        final TextView name_confirmation = findViewById(R.id.spot_name_tv);
+        final TextView aadhar_confirmation = findViewById(R.id.aadhar_no_tv);
+        final TextView phone_confirmation = findViewById(R.id.phone_no_tv);
 
         port_confirmation_tv.setText(details.portName);
         zone_confirmation_tv.setText(details.zoneName);
@@ -98,8 +108,8 @@ public class SpotBookingConfirmation extends AppCompatActivity {
         checkPermissions();
 
         //confirming booking details and so displaying payment options
-        final LinearLayout ll = (LinearLayout) findViewById(R.id.invisible_ll);
-        final Button confirm_booking_btn = (Button)findViewById(R.id.final_booking_confirm_btn);
+        final LinearLayout ll = findViewById(R.id.invisible_ll);
+        final Button confirm_booking_btn = findViewById(R.id.final_booking_confirm_btn);
         confirm_booking_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,10 +120,10 @@ public class SpotBookingConfirmation extends AppCompatActivity {
 
 
         //proceeding after displaying payment options
-        Button final_proceed_btn = (Button)findViewById(R.id.final_proceed_btn);
-        RadioGroup payment_decision_radio = (RadioGroup) findViewById(R.id.payment_decision_radio);
-        final RadioButton proceed_to_payment = (RadioButton) findViewById(R.id.proceed_to_payment);
-        final RadioButton pay_offline = (RadioButton) findViewById(R.id.pay_offline);
+        Button final_proceed_btn = findViewById(R.id.final_proceed_btn);
+        RadioGroup payment_decision_radio = findViewById(R.id.payment_decision_radio);
+        final RadioButton proceed_to_payment = findViewById(R.id.proceed_to_payment);
+        final RadioButton pay_offline = findViewById(R.id.pay_offline);
 
         final_proceed_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +146,7 @@ public class SpotBookingConfirmation extends AppCompatActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     Intent toCustomerHome = new Intent(SpotBookingConfirmation.this, CustomerHome.class);
+                                    toCustomerHome.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(toCustomerHome);
                                 }
                             })
@@ -163,6 +174,26 @@ public class SpotBookingConfirmation extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()){
+
+            case R.id.menuLogout:
+                Toast.makeText(this, "You clicked logout", Toast.LENGTH_SHORT).show();
+                break;
+
+        }
+        return true;
     }
 
 
@@ -473,13 +504,15 @@ public class SpotBookingConfirmation extends AppCompatActivity {
 
                 Log.e("PayUResponse: ", payuResponse);
                 // Response from SURl and FURL
-                String merchantResponse = transactionResponse.getTransactionDetails();
+                merchantResponse = transactionResponse.getTransactionDetails();
                 Log.e("TransationDetails", merchantResponse);
             }  else if (resultModel != null && resultModel.getError() != null) {
                 Log.e("Error response : " ,  resultModel.getError().getTransactionResponse().toString());
             } else {
                 Log.e("Both objects are null!", " ");
             }
+
+
         }
     }
 
@@ -642,13 +675,123 @@ public class SpotBookingConfirmation extends AppCompatActivity {
         protected void onPostExecute(String response) {
 
             super.onPostExecute(response);
+            progressDialog.dismiss();
+            Log.e("InpostExecute response:", response);
+
+            String phone_no = "";
+            SharedPreferences prefs = getSharedPreferences("portinfo", MODE_PRIVATE);
+            phone_no = prefs.getString("phone_number", "UNKNOWN");
+
+            UpdateSpotBookingBalances updateSpotBookingBalances = new UpdateSpotBookingBalances();
+            updateSpotBookingBalances.execute(details.portName, details.zoneName, details.quantity);
+
+
+        }
+
+
+    }
+
+
+    private class UpdateSpotBookingBalances extends AsyncTask<String, String, String> {
+
+        private ProgressDialog progressDialog;
+
+
+        @Override
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(SpotBookingConfirmation.this);
+            progressDialog.setMessage("Please wait...");
+            progressDialog.show();
+            Log.e("InpreExecute", "nothing");
+
+        }
+
+        @Override
+        protected String doInBackground(String... postParams) {
+            String port_name = postParams[0];
+            String zone_name = postParams[1];
+            String quantity = postParams[2];
+
+            String data = null;
+            try {
+                data = URLEncoder.encode("port_name", "UTF-8") + "=" + URLEncoder.encode(port_name, "UTF-8") + "&" +
+                        URLEncoder.encode("zone_name", "UTF-8") + "=" + URLEncoder.encode(zone_name, "UTF-8") + "&" +
+                        URLEncoder.encode("quantity", "UTF-8") + "=" + URLEncoder.encode(quantity, "UTF-8");
+
+                URL writeURL = new URL("http://192.168.43.218/portinfo/updateSpotBookingBalances.php");
+                HttpURLConnection urlConnection = (HttpURLConnection) writeURL.openConnection();
+                Log.e("IndoInBackgroundTask", "after opening connection");
+                urlConnection.setDoOutput(true);
+                urlConnection.setRequestMethod("POST");
+                Log.e("IndoInBackgroundTask", "before opening stream");
+                OutputStream os = urlConnection.getOutputStream();
+                Log.e("current background: ", "Output stream opeded");
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                bw.write(data);
+                bw.flush();
+                bw.close();
+
+                Log.e("inDoINBackGround:", "started reading response");
+                InputStream is = urlConnection.getInputStream();
+                Log.e("inDoINBackground", "got input stream");
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                Log.e("inDoInBackground", "created br");
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+                while ((line = br.readLine())!=null) {
+                    Log.e("indoinbackground", "in while");
+                    sb.append(line);
+                }
+
+                Log.e("inDoinbackaoid", "out while");
+                Log.e("doInBackgroundResponse", sb.toString());
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+
             super.onPostExecute(response);
             progressDialog.dismiss();
             Log.e("InpostExecute response:", response);
 
-        }
-    }
+            if(response.equals("updated successfully")) {
+                Log.e("Sand Balance", "updated succesfully");
+            } else {
+                Log.e("Sand Balance", "failed to update");
+            }
 
+            String phone_no = "";
+            SharedPreferences prefs = getSharedPreferences("portinfo", MODE_PRIVATE);
+            phone_no = prefs.getString("phone_number", "UNKNOWN");
+
+            if(phone_no.isEmpty() || phone_no.equals("UNKNOWN")) {
+                Intent toMainActivity = new Intent(SpotBookingConfirmation.this, MainActivity.class);
+                toMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(toMainActivity);
+            } else {
+
+                Intent toCustomerHome = new Intent(SpotBookingConfirmation.this, CustomerHome.class);
+                toCustomerHome.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                toCustomerHome.putExtra("back from booking", true);
+                startActivity(toCustomerHome);
+            }
+
+
+
+
+        }
+
+
+    }
 }
 
 

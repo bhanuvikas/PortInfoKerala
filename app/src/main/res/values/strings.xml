@@ -74,6 +74,8 @@
     <string name="status">Booking Status</string>
     <string name="booking_process">Booking Process</string>
     <string name="ok">OK</string>
+    <string name="logout">Logout</string>
+    <string name="cancel">Cancel</string>
 
 
 </resources>

@@ -1,8 +1,6 @@
 package com.example.bhanu.portinfokerala;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.ColorRes;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,7 +10,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class BookingDetailsAdapter extends RecyclerView.Adapter<BookingDetailsAdapter.BookingDetailsHolder>{
+public class BookingStatusAdapter extends RecyclerView.Adapter<BookingStatusAdapter.BookingStatusHolder>{
+
 
     public interface OnItemClickListener {
 
@@ -20,26 +19,26 @@ public class BookingDetailsAdapter extends RecyclerView.Adapter<BookingDetailsAd
 
     }
 
+
     private final List<BookingDetailsCard> bookingDetailsCardList;
 
     private final OnItemClickListener listener;
 
-
-    public BookingDetailsAdapter(List<BookingDetailsCard> bookingDetailsList, OnItemClickListener listener) {
+    public BookingStatusAdapter(List<BookingDetailsCard> bookingDetailsList, OnItemClickListener listener) {
 
         this.bookingDetailsCardList = bookingDetailsList;
         this.listener = listener;
     }
 
     @Override
-    public BookingDetailsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BookingStatusHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.booking_details_card, parent, false);
-        return new BookingDetailsHolder(v);
+        return new BookingStatusHolder(v);
 
     }
 
     @Override
-    public void onBindViewHolder(BookingDetailsHolder holder, int position) {
+    public void onBindViewHolder(BookingStatusHolder holder, int position) {
         BookingDetailsCard item = bookingDetailsCardList.get(position);
 
         holder.bind(bookingDetailsCardList.get(position), listener);
@@ -51,14 +50,12 @@ public class BookingDetailsAdapter extends RecyclerView.Adapter<BookingDetailsAd
     }
 
 
-
-
-    static class BookingDetailsHolder extends RecyclerView.ViewHolder {
+    static class BookingStatusHolder extends RecyclerView.ViewHolder {
 
         TextView booking_id_tv, booking_date_tv, booking_quantity_tv, booking_request_method_tv;
         CardView cardView;
 
-        public BookingDetailsHolder(View itemView) {
+        public BookingStatusHolder(View itemView) {
             super(itemView);
 
             booking_id_tv = itemView.findViewById(R.id.booking_id);
@@ -83,6 +80,7 @@ public class BookingDetailsAdapter extends RecyclerView.Adapter<BookingDetailsAd
             } else {
                 cardView.setBackgroundColor(Color.parseColor("#ffff1a"));
             }
+            
 
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +92,11 @@ public class BookingDetailsAdapter extends RecyclerView.Adapter<BookingDetailsAd
 
     }
 
+
+
+
+
+
+
+
 }
-
-
